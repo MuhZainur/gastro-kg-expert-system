@@ -1,0 +1,12 @@
+# What is the ranked differential diagnosis of encounter E001?
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?rank ?code ?cf ?status ?coverage WHERE {
+  ?h a gk:Hypothesis ; gk:ofEncounter gkd:E001 ; gk:rank ?rank ; gk:certaintyFactor ?cf ;
+     gk:forDisease ?d ; gk:matchStatus ?s ; gk:ruleCoverage ?coverage .
+  ?d gk:code ?code .
+  BIND(STRAFTER(STR(?s), "#") AS ?status)
+} ORDER BY ?rank

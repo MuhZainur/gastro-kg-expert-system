@@ -1,0 +1,32 @@
+# title: Forward chaining: match facts to evidence
+# description: Each reported or denied symptom activates the evidence links that mention it. CF = patient certainty x expert CF.
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {
+  ?hypothesis a gk:Hypothesis ; gk:ofEncounter ?encounter ; gk:forDisease ?disease .
+  ?item a gk:EvidenceItem ; rdfs:label ?label ; gk:ofEncounter ?encounter ; gk:ofHypothesis ?hypothesis ;
+        gk:basedOnObservation ?obs ; gk:basedOnLink ?link ; gk:itemCF ?cf ; gk:polarity ?polarity .
+}
+WHERE {
+  ?encounter a gk:Encounter ; gk:hasObservation ?obs .
+  ?obs gk:userCF ?user .
+  {
+    ?obs gk:observedSymptom ?symptom .
+    ?link a gk:EvidenceLink ; gk:aboutSymptom ?symptom ; gk:ofDisease ?disease ; gk:expertCF ?weight .
+    BIND("reports" AS ?verb)
+  } UNION {
+    ?obs gk:deniedSymptom ?symptom .
+    ?link a gk:EvidenceLink ; gk:aboutSymptom ?symptom ; gk:ofDisease ?disease ; gk:absenceCF ?weight .
+    BIND("denies" AS ?verb)
+  }
+  BIND(?user * ?weight AS ?cf)
+  FILTER(?cf != 0)
+  BIND(IF(?cf > 0, gkd:Support, gkd:Oppose) AS ?polarity)
+  ?symptom gk:code ?sc .
+  ?disease gk:code ?dc .
+  BIND(IRI(CONCAT(STR(?encounter), "_", ?dc)) AS ?hypothesis)
+  BIND(IRI(CONCAT(STR(?encounter), "_", ?dc, "_", ?sc)) AS ?item)
+  BIND(CONCAT(STRAFTER(STR(?encounter), "#"), " ", ?verb, " ", ?sc, " -> ", ?dc, " (CF ", STR(?cf), ")") AS ?label)
+}

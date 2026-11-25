@@ -1,0 +1,12 @@
+# Which encounters are emergencies, and because of which symptom?
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?encounter ?symptom WHERE {
+  ?e a gk:Encounter ; gk:finalTriage gkd:Emergency .
+  ?t a gk:TriageDecision ; gk:ofEncounter ?e ; gk:triageLevel gkd:Emergency ; gk:triggeredBy ?s .
+  ?s gk:code ?symptom .
+  BIND(STRAFTER(STR(?e), "#") AS ?encounter)
+} ORDER BY ?encounter ?symptom

@@ -1,0 +1,11 @@
+# What is still missing to complete a rule in encounter E003?
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?disease ?coverage ?missing WHERE {
+  ?h a gk:Hypothesis ; gk:ofEncounter gkd:E003 ; gk:forDisease ?d ; gk:ruleCoverage ?coverage ;
+     gk:missingSymptom ?s .
+  ?d gk:code ?disease . ?s gk:code ?missing .
+} ORDER BY ?disease ?missing

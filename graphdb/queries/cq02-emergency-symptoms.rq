@@ -1,0 +1,9 @@
+# Which symptoms are emergency symptoms? (sub-class inference, rdfs9 / rdfs11)
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT DISTINCT ?code ?symptom WHERE {
+  ?s a gk:EmergencySymptom ; gk:code ?code ; rdfs:label ?symptom . FILTER(LANG(?symptom) = "en" || LANG(?symptom) = "")
+} ORDER BY ?code

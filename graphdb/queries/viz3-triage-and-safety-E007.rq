@@ -1,0 +1,18 @@
+# VISUAL GRAPH: patient, medicine, alerts and triage of E007
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+CONSTRUCT {
+  ?p gk:hadEncounter gkd:E007 ; gk:takesMedication ?m . ?m gk:drugClass ?c .
+  gkd:E007 gk:showsSymptom ?s ; gk:finalTriage ?level . ?level gk:refersTo ?place .
+  ?alert gk:ofEncounter gkd:E007 ; gk:concernsMedication ?am ; gk:forDisease ?disease ;
+         gk:suggestedAlternative ?alt .
+} WHERE {
+  ?p gk:hadEncounter gkd:E007 ; gk:takesMedication ?m . ?m gk:drugClass ?c .
+  gkd:E007 gk:showsSymptom ?s ; gk:finalTriage ?level . ?level gk:refersTo ?place .
+  ?alert a gk:SafetyAlert ; gk:ofEncounter gkd:E007 ; gk:concernsMedication ?am .
+  OPTIONAL { ?alert gk:forDisease ?disease }
+  OPTIONAL { ?alert gk:suggestedAlternative ?alt }
+}

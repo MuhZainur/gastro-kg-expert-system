@@ -1,0 +1,28 @@
+# title: Forward chaining: evaluate IF-THEN rules
+# description: Count how many conditions of each diagnostic rule the encounter satisfies.
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {
+  ?match a gk:RuleMatch ; rdfs:label ?label ; gk:ofEncounter ?encounter ; gk:evaluatesRule ?rule ;
+         gk:forDisease ?disease ; gk:matchedCount ?matched ; gk:requiredCount ?required ;
+         gk:ruleCoverage ?coverage .
+}
+WHERE {
+  {
+    SELECT ?encounter ?rule (COUNT(DISTINCT ?need) AS ?required) (COUNT(DISTINCT ?hit) AS ?matched)
+    WHERE {
+      ?rule a gk:DiagnosticRule ; gk:requiresSymptom ?need .
+      ?encounter a gk:Encounter .
+      OPTIONAL { ?encounter gk:showsSymptom ?need . BIND(?need AS ?hit) }
+    }
+    GROUP BY ?encounter ?rule
+  }
+  FILTER(?matched > 0)
+  ?rule gk:concludes ?disease ; gk:code ?rc .
+  BIND(?matched / ?required AS ?coverage)
+  BIND(IRI(CONCAT(STR(?encounter), "_", ?rc)) AS ?match)
+  BIND(CONCAT(STRAFTER(STR(?encounter), "#"), " ", ?rc, ": ", STR(?matched), "/", STR(?required),
+              " conditions") AS ?label)
+}

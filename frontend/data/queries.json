@@ -1,0 +1,531 @@
+[
+  {
+    "id": "cq01",
+    "title": "Which diseases manifest as epigastric pain?",
+    "query": "# Which diseases manifest as epigastric pain?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?code ?disease WHERE {\n  ?d gk:manifestsAs gkd:EpigastricPain ; gk:code ?code ; rdfs:label ?disease . FILTER(LANG(?disease) = \"en\" || LANG(?disease) = \"\")\n} ORDER BY ?code\n",
+    "columns": [
+      "code",
+      "disease"
+    ],
+    "rows": [
+      [
+        "P01",
+        "Gastritis (acute)"
+      ],
+      [
+        "P02",
+        "Dyspepsia (functional)"
+      ],
+      [
+        "P03",
+        "GERD (gastroesophageal reflux disease)"
+      ],
+      [
+        "P04",
+        "Peptic (stomach) ulcer"
+      ],
+      [
+        "P05",
+        "Gastroparesis"
+      ],
+      [
+        "P06",
+        "Stomach cancer"
+      ]
+    ]
+  },
+  {
+    "id": "cq02",
+    "title": "Which symptoms are emergency symptoms? (sub-class inference, rdfs9 / rdfs11)",
+    "query": "# Which symptoms are emergency symptoms? (sub-class inference, rdfs9 / rdfs11)\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT DISTINCT ?code ?symptom WHERE {\n  ?s a gk:EmergencySymptom ; gk:code ?code ; rdfs:label ?symptom . FILTER(LANG(?symptom) = \"en\" || LANG(?symptom) = \"\")\n} ORDER BY ?code\n",
+    "columns": [
+      "code",
+      "symptom"
+    ],
+    "rows": [
+      [
+        "A01",
+        "Vomiting blood or coffee-ground material"
+      ],
+      [
+        "A02",
+        "Black, tarry or bloody stool"
+      ],
+      [
+        "A06",
+        "Sudden, severe or constant abdominal pain"
+      ],
+      [
+        "A07",
+        "Fainting, dizziness or rapid pulse"
+      ],
+      [
+        "A09",
+        "Pain in the chest, jaw, neck or arm"
+      ]
+    ]
+  },
+  {
+    "id": "cq03",
+    "title": "Which diseases affect the upper GI tract? (property chain + transitivity)",
+    "query": "# Which diseases affect the upper GI tract? (property chain + transitivity)\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT DISTINCT ?code ?disease WHERE {\n  ?d gk:affects gkd:UpperGITract ; gk:code ?code ; rdfs:label ?disease . FILTER(LANG(?disease) = \"en\" || LANG(?disease) = \"\")\n} ORDER BY ?code\n",
+    "columns": [
+      "code",
+      "disease"
+    ],
+    "rows": [
+      [
+        "P01",
+        "Gastritis (acute)"
+      ],
+      [
+        "P02",
+        "Dyspepsia (functional)"
+      ],
+      [
+        "P03",
+        "GERD (gastroesophageal reflux disease)"
+      ],
+      [
+        "P04",
+        "Peptic (stomach) ulcer"
+      ],
+      [
+        "P05",
+        "Gastroparesis"
+      ],
+      [
+        "P06",
+        "Stomach cancer"
+      ]
+    ]
+  },
+  {
+    "id": "cq04",
+    "title": "What is the ranked differential diagnosis of encounter E001?",
+    "query": "# What is the ranked differential diagnosis of encounter E001?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?rank ?code ?cf ?status ?coverage WHERE {\n  ?h a gk:Hypothesis ; gk:ofEncounter gkd:E001 ; gk:rank ?rank ; gk:certaintyFactor ?cf ;\n     gk:forDisease ?d ; gk:matchStatus ?s ; gk:ruleCoverage ?coverage .\n  ?d gk:code ?code .\n  BIND(STRAFTER(STR(?s), \"#\") AS ?status)\n} ORDER BY ?rank\n",
+    "columns": [
+      "rank",
+      "code",
+      "cf",
+      "status",
+      "coverage"
+    ],
+    "rows": [
+      [
+        1,
+        "P03",
+        0.986688,
+        "FullRuleMatch",
+        1.0
+      ],
+      [
+        2,
+        "P01",
+        0.896,
+        "PartialMatch",
+        0.6666666666666666
+      ],
+      [
+        3,
+        "P04",
+        0.772,
+        "PartialMatch",
+        0.6666666666666666
+      ],
+      [
+        4,
+        "P02",
+        0.696,
+        "WeakMatch",
+        0.25
+      ],
+      [
+        5,
+        "P05",
+        0.616,
+        "WeakMatch",
+        0.3333333333333333
+      ],
+      [
+        6,
+        "P06",
+        0.3376,
+        "WeakMatch",
+        0.3333333333333333
+      ]
+    ]
+  },
+  {
+    "id": "cq05",
+    "title": "How was the certainty factor of GERD in E001 built, step by step?",
+    "query": "# How was the certainty factor of GERD in E001 built, step by step?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?step ?symptom ?itemCF ?before ?after WHERE {\n  ?item a gk:EvidenceItem ; gk:ofHypothesis gkd:E001_P03 ; gk:sequence ?step ; gk:itemCF ?itemCF ;\n        gk:cumulativeBefore ?before ; gk:cumulativeAfter ?after ; gk:basedOnLink ?link .\n  ?link gk:aboutSymptom ?s . ?s gk:code ?symptom .\n} ORDER BY ?step\n",
+    "columns": [
+      "step",
+      "symptom",
+      "itemCF",
+      "before",
+      "after"
+    ],
+    "rows": [
+      [
+        1,
+        "G01",
+        0.8,
+        0.0,
+        0.8
+      ],
+      [
+        2,
+        "G02",
+        0.48,
+        0.8,
+        0.896
+      ],
+      [
+        3,
+        "G04",
+        0.8,
+        0.896,
+        0.9792
+      ],
+      [
+        4,
+        "G07",
+        0.36,
+        0.9792,
+        0.986688
+      ]
+    ]
+  },
+  {
+    "id": "cq06",
+    "title": "What is still missing to complete a rule in encounter E003?",
+    "query": "# What is still missing to complete a rule in encounter E003?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?disease ?coverage ?missing WHERE {\n  ?h a gk:Hypothesis ; gk:ofEncounter gkd:E003 ; gk:forDisease ?d ; gk:ruleCoverage ?coverage ;\n     gk:missingSymptom ?s .\n  ?d gk:code ?disease . ?s gk:code ?missing .\n} ORDER BY ?disease ?missing\n",
+    "columns": [
+      "disease",
+      "coverage",
+      "missing"
+    ],
+    "rows": [
+      [
+        "P01",
+        0.6666666666666666,
+        "G02"
+      ],
+      [
+        "P02",
+        0.75,
+        "G05"
+      ]
+    ]
+  },
+  {
+    "id": "cq07",
+    "title": "Which encounters are emergencies, and because of which symptom?",
+    "query": "# Which encounters are emergencies, and because of which symptom?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?encounter ?symptom WHERE {\n  ?e a gk:Encounter ; gk:finalTriage gkd:Emergency .\n  ?t a gk:TriageDecision ; gk:ofEncounter ?e ; gk:triageLevel gkd:Emergency ; gk:triggeredBy ?s .\n  ?s gk:code ?symptom .\n  BIND(STRAFTER(STR(?e), \"#\") AS ?encounter)\n} ORDER BY ?encounter ?symptom\n",
+    "columns": [
+      "encounter",
+      "symptom"
+    ],
+    "rows": [
+      [
+        "E004",
+        "A01"
+      ],
+      [
+        "E013",
+        "A09"
+      ]
+    ]
+  },
+  {
+    "id": "cq08",
+    "title": "What is the final triage level and care facility of every encounter?",
+    "query": "# What is the final triage level and care facility of every encounter?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?encounter ?level ?facility WHERE {\n  ?e a gk:Encounter ; gk:finalTriage ?l .\n  ?l gk:refersTo ?f .\n  BIND(STRAFTER(STR(?e), \"#\") AS ?encounter)\n  BIND(STRAFTER(STR(?l), \"#\") AS ?level)\n  BIND(STRAFTER(STR(?f), \"#\") AS ?facility)\n} ORDER BY ?encounter\n",
+    "columns": [
+      "encounter",
+      "level",
+      "facility"
+    ],
+    "rows": [
+      [
+        "E001",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E002",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E003",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E004",
+        "Emergency",
+        "EmergencyDepartment"
+      ],
+      [
+        "E005",
+        "Urgent",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E006",
+        "Referral",
+        "SpecialistClinic"
+      ],
+      [
+        "E007",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E008",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E009",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E010",
+        "SelfMonitor",
+        "HomeCare"
+      ],
+      [
+        "E011",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E012",
+        "PrimaryCare",
+        "PrimaryCareFacility"
+      ],
+      [
+        "E013",
+        "Emergency",
+        "EmergencyDepartment"
+      ]
+    ]
+  },
+  {
+    "id": "cq09",
+    "title": "Which patients does the reasoner classify as NSAID users? (property chain + hasValue)",
+    "query": "# Which patients does the reasoner classify as NSAID users? (property chain + hasValue)\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT DISTINCT ?patient WHERE {\n  ?p a gk:NSAIDUser .\n  BIND(STRAFTER(STR(?p), \"#\") AS ?patient)\n} ORDER BY ?patient\n",
+    "columns": [
+      "patient"
+    ],
+    "rows": [
+      [
+        "PT007"
+      ],
+      [
+        "PT008"
+      ]
+    ]
+  },
+  {
+    "id": "cq10",
+    "title": "Which medication safety alerts exist, how severe, and what could be discussed instead?",
+    "query": "# Which medication safety alerts exist, how severe, and what could be discussed instead?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?encounter ?medicine ?severity ?alternative ?reason WHERE {\n  ?a a gk:SafetyAlert ; gk:ofEncounter ?e ; gk:concernsMedication ?m ; gk:severity ?severity ; gk:reason ?reason .\n  OPTIONAL { ?a gk:suggestedAlternative ?alt }\n  BIND(STRAFTER(STR(?e), \"#\") AS ?encounter)\n  BIND(STRAFTER(STR(?m), \"#\") AS ?medicine)\n  BIND(STRAFTER(STR(?alt), \"#\") AS ?alternative)\n} ORDER BY ?encounter ?medicine ?reason\n",
+    "columns": [
+      "encounter",
+      "medicine",
+      "severity",
+      "alternative",
+      "reason"
+    ],
+    "rows": [
+      [
+        "E007",
+        "Ibuprofen",
+        "high",
+        "Paracetamol",
+        "Long-term NSAID use can injure the stomach lining."
+      ],
+      [
+        "E007",
+        "Ibuprofen",
+        "high",
+        "Paracetamol",
+        "NSAIDs are a common cause of peptic ulcers."
+      ],
+      [
+        "E007",
+        "Ibuprofen",
+        "moderate",
+        "Paracetamol",
+        "NSAIDs can cause or worsen reflux disease."
+      ],
+      [
+        "E008",
+        "Aspirin",
+        "high",
+        null,
+        "Taking an NSAID with an anticoagulant raises the risk of bleeding."
+      ],
+      [
+        "E008",
+        "Warfarin",
+        "high",
+        null,
+        "Taking an NSAID with an anticoagulant raises the risk of bleeding."
+      ],
+      [
+        "E009",
+        "Morphine",
+        "high",
+        "Paracetamol",
+        "Opioid pain medicines can delay stomach emptying or worsen symptoms."
+      ]
+    ]
+  },
+  {
+    "id": "cq11",
+    "title": "What should the system ask next? (backward chaining)",
+    "query": "# What should the system ask next? (backward chaining)\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?encounter ?symptom ?score WHERE {\n  ?q a gk:QuestionSuggestion ; gk:rank 1 ; gk:ofEncounter ?e ; gk:askSymptom ?s ; gk:discriminationScore ?score .\n  ?s gk:code ?symptom .\n  BIND(STRAFTER(STR(?e), \"#\") AS ?encounter)\n} ORDER BY ?encounter\n",
+    "columns": [
+      "encounter",
+      "symptom",
+      "score"
+    ],
+    "rows": [
+      [
+        "E001",
+        "G08",
+        0.8
+      ],
+      [
+        "E002",
+        "G04",
+        0.8
+      ],
+      [
+        "E003",
+        "G05",
+        0.4
+      ],
+      [
+        "E005",
+        "G01",
+        0.6
+      ],
+      [
+        "E006",
+        "G05",
+        0.4
+      ],
+      [
+        "E007",
+        "G13",
+        0.3
+      ],
+      [
+        "E008",
+        "G04",
+        0.8
+      ],
+      [
+        "E009",
+        "G01",
+        0.4
+      ],
+      [
+        "E010",
+        "G10",
+        0.8
+      ],
+      [
+        "E011",
+        "G10",
+        0.8
+      ],
+      [
+        "E012",
+        "G05",
+        0.4
+      ]
+    ]
+  },
+  {
+    "id": "cq12",
+    "title": "Where do the certainty weights come from?",
+    "query": "# Where do the certainty weights come from?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?status ?sourceType (COUNT(DISTINCT ?link) AS ?links) WHERE {\n  ?link a gk:EvidenceLink ; gk:weightStatus ?w ; dcterms:source ?src .\n  BIND(STRAFTER(STR(?w), \"#\") AS ?status)\n  BIND(IF(?src = gkd:GroupAssignment, \"group assignment or modelling choice\", \"public health source\") AS ?sourceType)\n} GROUP BY ?status ?sourceType ORDER BY ?status ?sourceType\n",
+    "columns": [
+      "status",
+      "sourceType",
+      "links"
+    ],
+    "rows": [
+      [
+        "NewWeight",
+        "group assignment or modelling choice",
+        3
+      ],
+      [
+        "NewWeight",
+        "public health source",
+        38
+      ],
+      [
+        "SlideWeight",
+        "group assignment or modelling choice",
+        2
+      ],
+      [
+        "SlideWeight",
+        "public health source",
+        2
+      ]
+    ]
+  },
+  {
+    "id": "cq13",
+    "title": "Which evidence argues against a hypothesis in E011?",
+    "query": "# Which evidence argues against a hypothesis in E011?\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT ?disease ?symptom ?itemCF WHERE {\n  ?item a gk:EvidenceItem ; gk:ofEncounter gkd:E011 ; gk:polarity gkd:Oppose ; gk:itemCF ?itemCF ;\n        gk:basedOnLink ?link .\n  ?link gk:ofDisease ?d ; gk:aboutSymptom ?s .\n  ?d gk:code ?disease . ?s gk:code ?symptom .\n} ORDER BY ?disease ?symptom\n",
+    "columns": [
+      "disease",
+      "symptom",
+      "itemCF"
+    ],
+    "rows": [
+      [
+        "P03",
+        "G04",
+        -0.4
+      ],
+      [
+        "P03",
+        "G08",
+        -0.16
+      ]
+    ]
+  },
+  {
+    "id": "cq14",
+    "title": "Which patients are at raised ulcer risk? (union of two defined classes)",
+    "query": "# Which patients are at raised ulcer risk? (union of two defined classes)\nPREFIX gk:      <http://example.org/gastrokg/ontology#>\nPREFIX gkd:     <http://example.org/gastrokg/data#>\nPREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX skos:    <http://www.w3.org/2004/02/skos/core#>\nPREFIX dcterms: <http://purl.org/dc/terms/>\nSELECT DISTINCT ?patient WHERE {\n  ?p a gk:UlcerRiskPatient .\n  BIND(STRAFTER(STR(?p), \"#\") AS ?patient)\n} ORDER BY ?patient\n",
+    "columns": [
+      "patient"
+    ],
+    "rows": [
+      [
+        "PT004"
+      ],
+      [
+        "PT007"
+      ],
+      [
+        "PT008"
+      ]
+    ]
+  }
+]

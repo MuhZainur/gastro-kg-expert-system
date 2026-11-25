@@ -1,0 +1,11 @@
+# title: Forward chaining: fire rules
+# description: A rule fires when every condition is satisfied (the strict AND of the original system).
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT { ?match a gk:RuleFiring ; gk:firedRule ?rule }
+WHERE {
+  ?match a gk:RuleMatch ; gk:evaluatesRule ?rule ; gk:matchedCount ?m ; gk:requiredCount ?r .
+  FILTER(?m = ?r)
+}

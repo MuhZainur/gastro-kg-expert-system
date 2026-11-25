@@ -1,0 +1,211 @@
+.graph-shell {
+  background: var(--graph-bg);
+  color: var(--graph-text);
+  border: 1px solid var(--graph-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.graph-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--graph-border);
+}
+
+.graph-toolbar button {
+  min-height: var(--touch);
+  font: inherit;
+  font-size: var(--fs-14);
+  color: var(--graph-text);
+  background: var(--graph-surface);
+  border: 1px solid var(--graph-border);
+  border-radius: var(--radius);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+}
+
+.graph-toolbar button:hover {
+  border-color: var(--origin-owl);
+}
+
+.graph-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.graph-key {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.graph-key[aria-pressed="false"] {
+  opacity: 0.45;
+}
+
+.graph-key-line {
+  width: 26px;
+  height: 10px;
+  flex: none;
+}
+
+.graph-tools {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.graph-stage {
+  position: relative;
+  height: 560px;
+  min-height: 420px;
+}
+
+.graph-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+
+.graph-svg .edge line:not(.hit) {
+  stroke-width: 1.4;
+}
+
+.graph-svg .edge line.hit {
+  stroke: transparent;
+  stroke-width: 16;
+  cursor: pointer;
+}
+
+.graph-svg .edge text {
+  fill: var(--graph-text);
+  font-size: 11.5px;
+  text-anchor: middle;
+  cursor: pointer;
+  paint-order: stroke;
+  stroke: var(--graph-bg);
+  stroke-width: 4px;
+}
+
+.graph-svg .edge.f line:not(.hit) { stroke: var(--origin-file); }
+.graph-svg .edge.d line:not(.hit) { stroke: var(--origin-rdfs); stroke-dasharray: 7 4; }
+.graph-svg .edge.o line:not(.hit) { stroke: var(--origin-owl); stroke-dasharray: 7 4; }
+.graph-svg .edge.r line:not(.hit) { stroke: var(--origin-rule); stroke-dasharray: 2 4; stroke-width: 1.8; }
+
+.graph-svg .node {
+  cursor: grab;
+  outline: none;
+}
+
+.graph-svg .node circle {
+  stroke: transparent;
+  stroke-width: 2.5;
+}
+
+.graph-svg .node.cls circle {
+  stroke: var(--origin-file);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.graph-svg .node:hover circle,
+.graph-svg .node:focus-visible circle {
+  stroke: var(--origin-owl);
+}
+
+.graph-svg .node.on circle {
+  stroke: #ffffff;
+  stroke-width: 3;
+}
+
+.graph-svg .node text {
+  fill: #ffffff;
+  font-size: 12px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.graph-svg .dim {
+  opacity: 0.2;
+}
+
+.graph-svg .menu {
+  cursor: pointer;
+}
+
+.graph-svg .menu circle {
+  fill: var(--graph-surface);
+  stroke: var(--graph-text);
+  stroke-width: 1.3;
+}
+
+.graph-svg .menu text {
+  fill: var(--graph-text);
+  font-size: 16px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.graph-panel {
+  position: absolute;
+  right: var(--space-3);
+  top: var(--space-3);
+  bottom: var(--space-3);
+  width: min(370px, calc(100% - 24px));
+  overflow: auto;
+  background: rgba(22, 27, 34, 0.96);
+  border: 1px solid var(--graph-border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-14);
+}
+
+.graph-panel h3 {
+  margin: var(--space-3) 0 var(--space-1);
+  font-size: var(--fs-14);
+  color: var(--origin-file);
+}
+
+.graph-panel pre {
+  background: #0d1117;
+  color: #a5d6ff;
+  border-color: var(--graph-border);
+}
+
+.graph-panel-close {
+  float: right;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  background: transparent;
+  color: var(--graph-text);
+  border: 1px solid var(--graph-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.graph-row {
+  border-top: 1px solid var(--graph-border);
+  padding: var(--space-2) 0;
+  overflow-wrap: anywhere;
+}
+
+.origin-tag {
+  display: inline-block;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0 7px;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: var(--space-1);
+}
+
+.origin-tag.f { color: var(--origin-file); }
+.origin-tag.d { color: var(--origin-rdfs); }
+.origin-tag.o { color: var(--origin-owl); }
+.origin-tag.r { color: var(--origin-rule); }

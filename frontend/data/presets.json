@@ -1,0 +1,19 @@
+[
+  {
+    "id": "diclofenac",
+    "title": "Add medication: Diclofenac (NSAID)",
+    "description": "Declares Diclofenac as an NSAID medication so OWL classifies patients taking it as NSAIDUser and safety rules flag ulcer or gastritis risk.",
+    "turtle": "@prefix gk: <http://example.org/gastrokg/ontology#> .\n@prefix gkd: <http://example.org/gastrokg/data#> .\n@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n\ngkd:Diclofenac a gk:Medication ;\n    rdfs:label \"Diclofenac\"@en ;\n    gk:drugClass gkd:NSAID .",
+    "addsMedication": {
+      "id": "Diclofenac",
+      "label": "Diclofenac"
+    }
+  },
+  {
+    "id": "rule_r8",
+    "title": "Add diagnostic rule: R8 (Heartburn + Cough -> GERD)",
+    "description": "Adds an illustrative diagnostic rule concluding GERD when both Heartburn (G04) and Chronic cough or hoarseness (G09) are reported.",
+    "turtle": "@prefix gk: <http://example.org/gastrokg/ontology#> .\n@prefix gkd: <http://example.org/gastrokg/data#> .\n@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n@prefix dcterms: <http://purl.org/dc/terms/> .\n\ngkd:R8 a gk:DiagnosticRule ;\n    rdfs:label \"R8: IF G04 AND G09 THEN GERD\"@en ;\n    gk:code \"R8\" ;\n    gk:concludes gkd:GERD ;\n    gk:requiresSymptom gkd:Heartburn , gkd:CoughHoarseness ;\n    dcterms:source gkd:GroupAssignment .",
+    "addsMedication": null
+  }
+]

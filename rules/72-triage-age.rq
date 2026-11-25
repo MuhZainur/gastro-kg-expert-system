@@ -1,0 +1,18 @@
+# title: Triage: referral by age
+# description: Dyspeptic symptoms at or above the referral age (ACG/CAG guideline, conditional recommendation).
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {
+  ?d a gk:TriageDecision ; rdfs:label ?label ; gk:ofEncounter ?encounter ; gk:triageLevel gkd:Referral ;
+     gk:triggeredBy gkd:Policy ; gk:reason "Dyspepsia at or above the endoscopy referral age."@en .
+}
+WHERE {
+  gkd:Policy gk:referralAge ?threshold .
+  ?encounter a gk:DyspepticEncounter ; gk:encounterOf ?patient .
+  ?patient gk:age ?age .
+  FILTER(?age >= ?threshold)
+  BIND(IRI(CONCAT(STR(?encounter), "_T_Referral")) AS ?d)
+  BIND(CONCAT(STRAFTER(STR(?encounter), "#"), " triage: Referral") AS ?label)
+}

@@ -1,0 +1,16 @@
+# title: Backward chaining: best next question
+# description: The candidate with the highest score (ties broken by symptom code).
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT { ?q gk:rank 1 }
+WHERE {
+  ?q a gk:QuestionSuggestion ; gk:ofEncounter ?encounter ; gk:discriminationScore ?score ; gk:askSymptom ?s .
+  ?s gk:code ?code .
+  FILTER NOT EXISTS {
+    ?o a gk:QuestionSuggestion ; gk:ofEncounter ?encounter ; gk:discriminationScore ?score2 ; gk:askSymptom ?s2 .
+    ?s2 gk:code ?code2 .
+    FILTER(?score2 > ?score || (?score2 = ?score && ?code2 < ?code))
+  }
+}

@@ -1,0 +1,17 @@
+# VISUAL GRAPH: CF chain of the GERD hypothesis in E001
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+CONSTRUCT {
+  gkd:E001 gk:primaryHypothesis ?h .
+  ?item gk:ofHypothesis ?h ; gk:previousStep ?prev ; gk:basedOnObservation ?obs ; gk:basedOnLink ?link .
+  ?obs gk:observedSymptom ?s . ?link gk:aboutSymptom ?s .
+  ?h gk:forDisease ?d .
+} WHERE {
+  gkd:E001 gk:primaryHypothesis ?h . ?h gk:forDisease ?d .
+  ?item a gk:EvidenceItem ; gk:ofHypothesis ?h ; gk:basedOnObservation ?obs ; gk:basedOnLink ?link .
+  ?obs gk:observedSymptom ?s .
+  OPTIONAL { ?item gk:previousStep ?prev }
+}

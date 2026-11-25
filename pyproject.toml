@@ -1,0 +1,20 @@
+[project]
+name = "gastrokg"
+version = "1.0.0"
+requires-python = "==3.12.*"
+dependencies = [
+    "fastapi==0.165.0",
+    "rdflib==7.6.0",
+    "owlrl==7.6.2",
+    "pyshacl==0.40.2",
+]
+
+[dependency-groups]
+dev = [
+    "uvicorn==0.54.0",
+    "httpx==0.28.1",
+    "pytest==9.2.0",
+]
+
+[tool.vercel]
+entrypoint = "backend.app.main:app"

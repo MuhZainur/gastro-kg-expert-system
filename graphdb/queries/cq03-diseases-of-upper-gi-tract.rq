@@ -1,0 +1,9 @@
+# Which diseases affect the upper GI tract? (property chain + transitivity)
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT DISTINCT ?code ?disease WHERE {
+  ?d gk:affects gkd:UpperGITract ; gk:code ?code ; rdfs:label ?disease . FILTER(LANG(?disease) = "en" || LANG(?disease) = "")
+} ORDER BY ?code

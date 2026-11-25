@@ -1,0 +1,88 @@
+# =====================================================================
+#  GastroKG -- SHACL shapes
+#  RDFS domain/range only infer types and OWL assumes an open world, so
+#  "must have" and value limits are checked here, before reasoning.
+# =====================================================================
+@prefix gk:      <http://example.org/gastrokg/ontology#> .
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+gk:PatientShape a sh:NodeShape ;
+    sh:targetClass gk:Patient ;
+    sh:property [ sh:path gk:age ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:integer ;
+                  sh:minInclusive 0 ; sh:maxInclusive 120 ;
+                  sh:message "A patient needs exactly one age between 0 and 120." ] .
+
+gk:EncounterShape a sh:NodeShape ;
+    sh:targetClass gk:Encounter ;
+    sh:property [ sh:path gk:hasObservation ; sh:minCount 1 ; sh:class gk:SymptomObservation ;
+                  sh:message "An encounter needs at least one symptom observation." ] ;
+    sh:property [ sh:path [ sh:inversePath gk:hadEncounter ] ; sh:minCount 1 ; sh:maxCount 1 ;
+                  sh:message "An encounter belongs to exactly one patient." ] ;
+    sh:sparql [
+        sh:message "The same symptom appears in two observations of one encounter." ;
+        sh:prefixes gk:prefixes ;
+        sh:select """
+            SELECT $this ?value WHERE {
+              $this gk:hasObservation ?a , ?b .
+              ?a (gk:observedSymptom|gk:deniedSymptom) ?value .
+              ?b (gk:observedSymptom|gk:deniedSymptom) ?value .
+              FILTER(?a != ?b)
+            }""" ] .
+
+gk:prefixes sh:declare [ sh:prefix "gk" ;
+    sh:namespace "http://example.org/gastrokg/ontology#"^^xsd:anyURI ] .
+
+gk:ObservationShape a sh:NodeShape ;
+    sh:targetClass gk:SymptomObservation ;
+    sh:property [ sh:path gk:userCF ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ;
+                  sh:minExclusive 0 ; sh:maxInclusive 1 ;
+                  sh:message "Patient certainty must be one decimal above 0 and at most 1." ] ;
+    sh:xone (
+        [ sh:property [ sh:path gk:observedSymptom ; sh:minCount 1 ; sh:maxCount 1 ; sh:class gk:Symptom ] ;
+          sh:property [ sh:path gk:deniedSymptom ; sh:maxCount 0 ] ]
+        [ sh:property [ sh:path gk:deniedSymptom ; sh:minCount 1 ; sh:maxCount 1 ; sh:class gk:Symptom ] ;
+          sh:property [ sh:path gk:observedSymptom ; sh:maxCount 0 ] ]
+    ) ;
+    sh:message "An observation reports or denies exactly one known symptom." .
+
+gk:SymptomShape a sh:NodeShape ;
+    sh:targetClass gk:Symptom ;
+    sh:property [ sh:path gk:code ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^[GA][0-9]{2}$" ] ;
+    sh:property [ sh:path rdfs:label ; sh:minCount 1 ] .
+
+gk:DiseaseShape a sh:NodeShape ;
+    sh:targetClass gk:Disease ;
+    sh:property [ sh:path gk:code ; sh:minCount 1 ; sh:maxCount 1 ; sh:pattern "^P[0-9]{2}$" ] ;
+    sh:property [ sh:path gk:icd10Code ; sh:minCount 1 ] ;
+    sh:property [ sh:path gk:initialAdvice ; sh:minCount 1 ] ;
+    sh:property [ sh:path [ sh:inversePath gk:ofDisease ] ; sh:minCount 1 ;
+                  sh:message "A disease without evidence links can never be diagnosed." ] .
+
+gk:EvidenceLinkShape a sh:NodeShape ;
+    sh:targetClass gk:EvidenceLink ;
+    sh:property [ sh:path gk:ofDisease ; sh:minCount 1 ; sh:maxCount 1 ; sh:class gk:Disease ] ;
+    sh:property [ sh:path gk:aboutSymptom ; sh:minCount 1 ; sh:maxCount 1 ; sh:class gk:Symptom ] ;
+    sh:property [ sh:path gk:expertCF ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:decimal ;
+                  sh:minExclusive -1 ; sh:maxExclusive 1 ;
+                  sh:message "Expert CF must lie strictly between -1 and 1." ] ;
+    sh:property [ sh:path gk:absenceCF ; sh:maxCount 1 ; sh:datatype xsd:decimal ;
+                  sh:minExclusive -1 ; sh:maxExclusive 0 ] ;
+    sh:property [ sh:path gk:weightStatus ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path dcterms:source ; sh:minCount 1 ;
+                  sh:message "Every piece of knowledge needs a source." ] .
+
+gk:DiagnosticRuleShape a sh:NodeShape ;
+    sh:targetClass gk:DiagnosticRule ;
+    sh:property [ sh:path gk:concludes ; sh:minCount 1 ; sh:maxCount 1 ; sh:class gk:Disease ] ;
+    sh:property [ sh:path gk:requiresSymptom ; sh:minCount 2 ; sh:class gk:Symptom ;
+                  sh:message "A diagnostic rule needs at least two conditions." ] ;
+    sh:property [ sh:path gk:code ; sh:minCount 1 ; sh:maxCount 1 ] ;
+    sh:property [ sh:path dcterms:source ; sh:minCount 1 ] .
+
+gk:MedicationShape a sh:NodeShape ;
+    sh:targetClass gk:Medication ;
+    sh:property [ sh:path gk:drugClass ; sh:minCount 1 ; sh:class gk:DrugClass ;
+                  sh:message "A medicine without a drug class escapes every safety rule." ] .

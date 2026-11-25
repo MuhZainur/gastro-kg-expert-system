@@ -1,0 +1,197 @@
+[
+  {
+    "id": "E001",
+    "title": "Worked example from our slides",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "GERD",
+      "label": "GERD (gastroesophageal reflux disease)",
+      "cf": 0.986688,
+      "status": "FullRuleMatch"
+    }
+  },
+  {
+    "id": "E002",
+    "title": "Full gastritis rule",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Gastritis",
+      "label": "Gastritis (acute)",
+      "cf": 0.857728,
+      "status": "FullRuleMatch"
+    }
+  },
+  {
+    "id": "E003",
+    "title": "Three of four dyspepsia conditions",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Dyspepsia",
+      "label": "Dyspepsia (functional)",
+      "cf": 0.876096,
+      "status": "PartialMatch"
+    }
+  },
+  {
+    "id": "E004",
+    "title": "Vomiting blood",
+    "triage": {
+      "level": "Emergency",
+      "label": "Emergency: go now",
+      "labelId": "Gawat darurat"
+    },
+    "topDisease": {
+      "id": "PepticUlcer",
+      "label": "Peptic (stomach) ulcer",
+      "cf": 0.824,
+      "status": "WeakMatch"
+    }
+  },
+  {
+    "id": "E005",
+    "title": "Weight loss with swallowing difficulty",
+    "triage": {
+      "level": "Urgent",
+      "label": "Urgent: see a doctor promptly",
+      "labelId": "Segera ke dokter"
+    },
+    "topDisease": {
+      "id": "StomachCancer",
+      "label": "Stomach cancer",
+      "cf": 0.76288,
+      "status": "PartialMatch"
+    }
+  },
+  {
+    "id": "E006",
+    "title": "New dyspepsia at 67",
+    "triage": {
+      "level": "Referral",
+      "label": "Referral for endoscopy",
+      "labelId": "Rujukan endoskopi"
+    },
+    "topDisease": {
+      "id": "Gastritis",
+      "label": "Gastritis (acute)",
+      "cf": 0.7264,
+      "status": "PartialMatch"
+    }
+  },
+  {
+    "id": "E007",
+    "title": "Ulcer pattern while taking ibuprofen",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "PepticUlcer",
+      "label": "Peptic (stomach) ulcer",
+      "cf": 0.91144,
+      "status": "FullRuleMatch"
+    }
+  },
+  {
+    "id": "E008",
+    "title": "Aspirin together with warfarin",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Gastritis",
+      "label": "Gastritis (acute)",
+      "cf": 0.48,
+      "status": "WeakMatch"
+    }
+  },
+  {
+    "id": "E009",
+    "title": "Diabetes, morphine and slow emptying",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Gastroparesis",
+      "label": "Gastroparesis",
+      "cf": 0.9290368,
+      "status": "FullRuleMatch"
+    }
+  },
+  {
+    "id": "E010",
+    "title": "One mild complaint",
+    "triage": {
+      "level": "SelfMonitor",
+      "label": "Self-monitor",
+      "labelId": "Pantau mandiri"
+    },
+    "topDisease": {
+      "id": "Dyspepsia",
+      "label": "Dyspepsia (functional)",
+      "cf": 0.16,
+      "status": "WeakMatch"
+    }
+  },
+  {
+    "id": "E011",
+    "title": "Reflux symptoms denied",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Gastritis",
+      "label": "Gastritis (acute)",
+      "cf": 0.7696,
+      "status": "PartialMatch"
+    }
+  },
+  {
+    "id": "E012",
+    "title": "Ambiguous early complaint",
+    "triage": {
+      "level": "PrimaryCare",
+      "label": "Routine primary care visit",
+      "labelId": "Kunjungan FKTP rutin"
+    },
+    "topDisease": {
+      "id": "Gastritis",
+      "label": "Gastritis (acute)",
+      "cf": 0.7264,
+      "status": "PartialMatch"
+    }
+  },
+  {
+    "id": "E013",
+    "title": "Chest pain that may not be the stomach",
+    "triage": {
+      "level": "Emergency",
+      "label": "Emergency: go now",
+      "labelId": "Gawat darurat"
+    },
+    "topDisease": {
+      "id": "GERD",
+      "label": "GERD (gastroesophageal reflux disease)",
+      "cf": 0.64,
+      "status": "WeakMatch"
+    }
+  }
+]

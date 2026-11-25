@@ -1,0 +1,11 @@
+# title: Primary hypothesis
+# description: The first ranked hypothesis counts only if it is better than weak.
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT { ?encounter gk:primaryHypothesis ?h }
+WHERE {
+  ?h a gk:Hypothesis ; gk:ofEncounter ?encounter ; gk:rank 1 ; gk:certaintyFactor ?cf ; gk:matchStatus ?status .
+  FILTER(?status != gkd:WeakMatch && ?cf > 0)
+}

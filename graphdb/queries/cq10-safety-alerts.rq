@@ -1,0 +1,13 @@
+# Which medication safety alerts exist, how severe, and what could be discussed instead?
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?encounter ?medicine ?severity ?alternative ?reason WHERE {
+  ?a a gk:SafetyAlert ; gk:ofEncounter ?e ; gk:concernsMedication ?m ; gk:severity ?severity ; gk:reason ?reason .
+  OPTIONAL { ?a gk:suggestedAlternative ?alt }
+  BIND(STRAFTER(STR(?e), "#") AS ?encounter)
+  BIND(STRAFTER(STR(?m), "#") AS ?medicine)
+  BIND(STRAFTER(STR(?alt), "#") AS ?alternative)
+} ORDER BY ?encounter ?medicine ?reason

@@ -1,0 +1,11 @@
+# What should the system ask next? (backward chaining)
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?encounter ?symptom ?score WHERE {
+  ?q a gk:QuestionSuggestion ; gk:rank 1 ; gk:ofEncounter ?e ; gk:askSymptom ?s ; gk:discriminationScore ?score .
+  ?s gk:code ?symptom .
+  BIND(STRAFTER(STR(?e), "#") AS ?encounter)
+} ORDER BY ?encounter

@@ -1,0 +1,16 @@
+# title: Best rule coverage per hypothesis
+# description: The highest share of conditions satisfied by any rule of that disease.
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT { ?h gk:ruleCoverage ?coverage }
+WHERE {
+  ?h a gk:Hypothesis ; gk:ofEncounter ?encounter ; gk:forDisease ?disease .
+  OPTIONAL {
+    SELECT ?encounter ?disease (MAX(?c) AS ?best)
+    WHERE { ?m a gk:RuleMatch ; gk:ofEncounter ?encounter ; gk:forDisease ?disease ; gk:ruleCoverage ?c }
+    GROUP BY ?encounter ?disease
+  }
+  BIND(COALESCE(?best, 0.0) AS ?coverage)
+}

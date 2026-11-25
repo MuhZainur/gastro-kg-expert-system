@@ -1,0 +1,11 @@
+# title: Disease manifests as symptom
+# description: Direct disease-symptom edges from supporting evidence links.
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT { ?disease gk:manifestsAs ?symptom }
+WHERE {
+  ?link a gk:EvidenceLink ; gk:ofDisease ?disease ; gk:aboutSymptom ?symptom ; gk:expertCF ?w .
+  FILTER(?w > 0)
+}

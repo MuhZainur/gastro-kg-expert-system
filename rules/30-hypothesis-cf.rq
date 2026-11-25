@@ -1,0 +1,27 @@
+# title: Certainty factor of each hypothesis
+# description: Join the last supporting and opposing steps with the MYCIN formula (P + N) / (1 - min(|P|, |N|)).
+# iterate: false
+PREFIX gk:   <http://example.org/gastrokg/ontology#>
+PREFIX gkd:  <http://example.org/gastrokg/data#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+CONSTRUCT {
+  ?h rdfs:label ?label ; gk:supportCF ?p ; gk:oppositionCF ?n ; gk:certaintyFactor ?cf .
+}
+WHERE {
+  ?h a gk:Hypothesis ; gk:ofEncounter ?encounter ; gk:forDisease ?disease .
+  ?disease rdfs:label ?name . FILTER(LANG(?name) = "en")
+  OPTIONAL {
+    ?lastSupport a gk:EvidenceItem ; gk:ofHypothesis ?h ; gk:polarity gkd:Support ; gk:cumulativeAfter ?pa .
+    FILTER NOT EXISTS { ?later gk:previousStep ?lastSupport }
+  }
+  OPTIONAL {
+    ?lastOppose a gk:EvidenceItem ; gk:ofHypothesis ?h ; gk:polarity gkd:Oppose ; gk:cumulativeAfter ?na .
+    FILTER NOT EXISTS { ?later2 gk:previousStep ?lastOppose }
+  }
+  BIND(COALESCE(?pa, 0.0) AS ?p)
+  BIND(COALESCE(?na, 0.0) AS ?n)
+  BIND(IF(ABS(?p) < ABS(?n), ABS(?p), ABS(?n)) AS ?smaller)
+  BIND((?p + ?n) / (1 - ?smaller) AS ?cf)
+  BIND(CONCAT(STRAFTER(STR(?encounter), "#"), " ", ?name, ": CF ",
+              STR(ROUND(?cf * 10000) / 10000)) AS ?label)
+}

@@ -1,0 +1,52 @@
+:root {
+  --bg: #f6f8fa;
+  --surface: #ffffff;
+  --border: #d8dee6;
+  --text: #17202b;
+  --text-muted: #4f5d6e;
+  --primary: #0f5e9c;
+  --primary-hover: #0b4a7c;
+  --focus: #1d74c4;
+  --control-border: #75839a;
+
+  --triage-emergency-fg: #9b1c1c;
+  --triage-emergency-bg: #fdecec;
+  --triage-urgent-fg: #8a3b0a;
+  --triage-urgent-bg: #fff0e3;
+  --triage-referral-fg: #6b4f00;
+  --triage-referral-bg: #fff7d6;
+  --triage-primary-fg: #0b4a7c;
+  --triage-primary-bg: #e7f1fb;
+  --triage-self-fg: #14603a;
+  --triage-self-bg: #e6f5ec;
+
+  --graph-bg: #161b22;
+  --graph-surface: #1d2430;
+  --graph-border: #303a4b;
+  --graph-text: #e8edf3;
+  --origin-file: #9aa7b5;
+  --origin-rdfs: #34c99a;
+  --origin-owl: #a99bff;
+  --origin-rule: #ff8a4c;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  --radius: 8px;
+  --max-width: 1080px;
+  --touch: 44px;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-24: 24px;
+  --fs-32: 32px;
+}

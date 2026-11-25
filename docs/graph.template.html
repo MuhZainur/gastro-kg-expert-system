@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graf GastroKG</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b0f1a;color:#fff;font-family:Roboto,"Segoe UI",sans-serif;font-weight:300}
+  body{display:flex;flex-direction:column}
+  header{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding:10px 16px;border-bottom:1px solid #1f2942}
+  header h1{font-size:16px;font-weight:500;margin:0 8px 0 0}
+  header h1 small{display:block;font-size:11.5px;font-weight:300;color:#aab4c8}
+  button{font:inherit;color:#fff;background:#151c2e;border:1px solid #2b3550;border-radius:8px;padding:5px 11px;cursor:pointer}
+  button:hover{border-color:#8fa6d8}button:disabled{opacity:.4;cursor:default}
+  .key{display:grid;grid-template-columns:34px auto;column-gap:8px;align-items:center;text-align:left;font-size:12.5px}
+  .key svg{grid-row:span 2;width:34px;height:10px}
+  .key b{font-weight:500}.key small{font-size:11px;color:#aab4c8}
+  .key[aria-pressed="false"]{opacity:.4}
+  .shapes{display:flex;gap:12px;font-size:11.5px;color:#aab4c8;align-items:center}
+  .shapes i{display:inline-block;width:13px;height:13px;border-radius:50%;margin-right:5px;vertical-align:-2px;background:#2c167c}
+  .shapes i.cls{background:none;border:1.5px dashed #c9d1e1;box-sizing:border-box}
+  .tools{margin-left:auto;display:flex;gap:6px}
+  main{flex:1;min-height:0;position:relative}
+  #graph{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  .edge line{stroke-width:1.3}
+  .edge .hit{stroke:transparent;stroke-width:16;cursor:pointer}
+  .edge text{fill:#fff;font-size:11.5px;text-anchor:middle;cursor:pointer;paint-order:stroke;stroke:#0b0f1a;stroke-width:4px}
+  .edge text.many{font-weight:700}
+  .f line{stroke:#6b7589}.d line{stroke:#34c99a;stroke-dasharray:7 4}.o line{stroke:#a99bff;stroke-dasharray:7 4}.r line{stroke:#ff8a4c;stroke-dasharray:2 4;stroke-width:1.7}
+  tspan.d{fill:#34c99a}tspan.o{fill:#a99bff}tspan.r{fill:#ff8a4c}tspan.d,tspan.o,tspan.r{font-weight:700}
+  .node{cursor:grab;outline:none}
+  .node circle{stroke:transparent;stroke-width:2.5}
+  .node.cls circle{stroke:#c9d1e1;stroke-width:1.5;stroke-dasharray:5 4}
+  .node:hover circle,.node:focus-visible circle{stroke:#8fa6d8}
+  .node.on circle{stroke:#fff;stroke-width:3}
+  .node text{fill:#fff;font-size:12.5px;text-anchor:middle;pointer-events:none}
+  .menu{cursor:pointer}.menu circle{fill:#232f4d;stroke:#c9d1e1;stroke-width:1.3}.menu:hover circle{fill:#3a4d80}
+  .menu text{fill:#fff;font-size:17px;text-anchor:middle;pointer-events:none}
+  .menu .count{font-size:10px;font-weight:700}
+  .dim{opacity:.2}
+  aside{position:absolute;right:12px;top:12px;bottom:12px;width:min(390px,calc(100% - 24px));overflow:auto;box-sizing:border-box;
+        background:rgba(21,28,46,.97);border:1px solid #2b3550;border-radius:10px;padding:12px 14px;font-size:13px}
+  aside h2{font-size:16px;font-weight:500;margin:0;overflow-wrap:anywhere}
+  aside h3{font-size:12px;color:#aab4c8;font-weight:500;margin:14px 0 4px}
+  aside .close{float:right;border:0;background:none;font-size:18px;padding:0 4px}
+  aside .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .row{border-top:1px solid #2b3550;padding:6px 0;overflow-wrap:anywhere}
+  .row small{display:block;color:#aab4c8}
+  .tag{display:inline-block;border:1px solid currentColor;border-radius:99px;padding:0 7px;font-size:10.5px;font-weight:700;margin-right:6px}
+  .tag.f{color:#aab4c8}.tag.d{color:#34c99a}.tag.o{color:#a99bff}.tag.r{color:#ff8a4c}
+  pre{background:#0b0f1a;border-radius:8px;padding:9px 10px;overflow:auto;font:11.5px/1.55 ui-monospace,Consolas,monospace;color:#9fd0ff}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <h1>GastroKG: pasien E007<small>Klik node: + expand, − collapse, × sembunyikan. Klik dua kali juga expand.</small></h1>
+  <div id="keys" style="display:contents"></div>
+  <div class="shapes"><span><i></i>individu (A-Box)</span><span><i class="cls"></i>kelas (T-Box)</span></div>
+  <div class="tools"><button type="button" id="fit">Pas layar</button><button type="button" id="reset">Reset</button></div>
+</header>
+<main>
+  <svg id="graph" role="group" aria-label="Graf pengetahuan">
+    <defs id="defs"></defs>
+    <g id="layer"></g>
+  </svg>
+  <aside hidden></aside>
+</main>
+<script>
+"use strict";
+const DATA = /*__DATA__*/null;
+const ORIGIN = {
+  f:{name:"Ditulis", hint:"fakta di file .ttl", colour:"#6b7589", dash:""},
+  d:{name:"RDFS", hint:"subClassOf, subPropertyOf, domain, range", colour:"#34c99a", dash:"7 4"},
+  o:{name:"OWL", hint:"inverse, rantai properti, definisi kelas", colour:"#a99bff", dash:"7 4"},
+  r:{name:"Rule SPARQL", hint:"hasil CONSTRUCT (CF, triase)", colour:"#ff8a4c", dash:"2 4"}
+};
+const KIND = {patient:["#0019a5","Pasien"], encounter:["#0a2266","Kunjungan"], symptom:["#1b3252","Gejala"], disease:["#2c167c","Penyakit"],
+  drug:["#751570","Obat"], triage:["#12406b","Triase"], hypothesis:["#5b1a86","Hipotesis"], other:["#343c5c","Individu"], class:["#10182b","Kelas"]};
+const START = {
+  "gkd:PT007":[110,320], "gkd:E007":[350,320], "gkd:Ibuprofen":[350,110], "gkd:NSAID":[610,110], "gkd:Paracetamol":[930,110],
+  "gkd:EpigastricPain":[610,225], "gkd:Nausea":[610,340], "gkd:HungerNightPain":[610,455], "gkd:Gastritis":[930,240], "gkd:GERD":[930,360],
+  "gkd:PepticUlcer":[930,485], "gkd:E007_P04":[610,570], "gkd:PrimaryCare":[350,510], "gkd:PrimaryCareFacility":[110,510],
+  "gk:NSAIDUser":[-120,190], "gk:UlcerRiskPatient":[-120,450]
+};
+/* where a label sits along its line, so that labels of crossing lines do not collide */
+const LABEL_AT = {"gkd:Gastritis>gkd:Nausea":.3, "gkd:GERD>gkd:EpigastricPain":.7, "gkd:GERD>gkd:Nausea":.3, "gkd:PepticUlcer>gkd:EpigastricPain":.65};
+const R = 42, BATCH = 8;
+const $ = s => document.querySelector(s);
+const svg = $("#graph"), layer = $("#layer"), panel = $("aside");
+const make = (tag, attrs = {}, parent) => {
+  const element = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for (const key in attrs) element.setAttribute(key, attrs[key]);
+  if (parent) parent.append(element);
+  return element;
+};
+const html = (tag, text, parent, cls) => {
+  const element = document.createElement(tag);
+  if (text !== null && text !== undefined) element.textContent = text;
+  if (cls) element.className = cls;
+  if (parent) parent.append(element);
+  return element;
+};
+const bare = id => id.slice(id.indexOf(":") + 1);
+const touching = new Map();
+for (const t of DATA.triples) for (const end of [t[0], t[2]]) { if (!touching.has(end)) touching.set(end, []); touching.get(end).push(t); }
+const shown = {f:true, d:true, o:true, r:true};
+let visible, selected = null, drawn = [], elements = new Map(), view = {x:0, y:0, w:1200, h:700};
+
+/* ---------------------------------------------------------------- expand and collapse */
+function neighbours(id) {
+  const rank = t => t[1] === "type" && t[0] === id ? 0 : t[1] === "subClassOf" ? 1 : t[1] === "type" ? 3 : 2;
+  const list = (touching.get(id) || []).filter(t => shown[t[3]]);
+  list.sort((a, b) => rank(a) - rank(b) || "fdor".indexOf(a[3]) - "fdor".indexOf(b[3]));
+  return [...new Set(list.map(t => t[0] === id ? t[2] : t[0]))];
+}
+const hiddenAround = id => neighbours(id).filter(other => !visible.has(other));
+function placeAround(parent, ids) {
+  const origin = visible.get(parent), others = [...visible.values()];
+  const cx = others.reduce((s, n) => s + n.x, 0) / others.length, cy = others.reduce((s, n) => s + n.y, 0) / others.length;
+  const base = Math.atan2(origin.y - cy, origin.x - cx || 1), spread = Math.min(Math.PI * 1.8, ids.length * .62);
+  ids.forEach((id, i) => {
+    const angle = base - spread / 2 + spread * (i + .5) / ids.length, distance = 190 + (i % 2) * 80;
+    visible.set(id, {x: origin.x + Math.cos(angle) * distance, y: origin.y + Math.sin(angle) * distance, by: parent});
+  });
+  for (let step = 0; step < 250; step++) for (const id of ids) {
+    const n = visible.get(id);
+    for (const [other, o] of visible) {
+      if (other === id) continue;
+      const dx = n.x - o.x, dy = n.y - o.y, d = Math.hypot(dx, dy) || 1;
+      if (d < 135) { n.x += (dx || 1) / d * (135 - d) * .2; n.y += dy / d * (135 - d) * .2; }
+    }
+  }
+}
+function expand(id) {
+  const ids = hiddenAround(id).slice(0, BATCH);
+  if (ids.length) placeAround(id, ids);
+  selected = id; render(); fit(); select(id);
+}
+const openedBy = id => [...visible].filter(([, n]) => { for (let by = n.by; by; by = visible.get(by)?.by) if (by === id) return true; return false; }).map(([other]) => other);
+function collapse(id) { openedBy(id).forEach(other => visible.delete(other)); selected = id; render(); fit(); select(id); }
+function hide(id) { [...openedBy(id), id].forEach(other => visible.delete(other)); selected = null; render(); select(null); }
+function reset() {
+  visible = new Map(Object.entries(START).filter(([id]) => DATA.nodes[id]).map(([id, [x, y]]) => [id, {x, y, by:null}]));
+  selected = null; render(); select(null); fit();
+}
+
+/* ---------------------------------------------------------------- drawing */
+function labelLines(id) {
+  const words = bare(id).split(/_|(?<=[a-z0-9])(?=[A-Z])/), lines = [];
+  for (const word of words) {
+    if (lines.length && (lines[lines.length - 1] + word).length <= 11) lines[lines.length - 1] += (id.includes("_") ? "_" : "") + word;
+    else lines.push(word);
+  }
+  const cf = DATA.nodes[id][3].find(v => v[0] === "certaintyFactor");
+  const out = lines.slice(0, cf ? 2 : 3).map(l => l.length > 13 ? l.slice(0, 12) + "…" : l);
+  if (lines.length > out.length) out[out.length - 1] += "…";
+  if (cf) out.push("CF " + Number(cf[1]).toFixed(3));
+  return out;
+}
+function drawEdge(edge) {
+  const a = visible.get(edge.a), b = visible.get(edge.b);
+  const dx = b.x - a.x, dy = b.y - a.y, length = Math.hypot(dx, dy) || 1, ux = dx / length, uy = dy / length;
+  for (const line of [edge.line, edge.hit]) {
+    line.setAttribute("x1", a.x + ux * R); line.setAttribute("y1", a.y + uy * R);
+    line.setAttribute("x2", b.x - ux * R); line.setAttribute("y2", b.y - uy * R);
+  }
+  let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+  if (angle > 90) angle -= 180; else if (angle < -90) angle += 180;
+  const t = LABEL_AT[`${edge.a}>${edge.b}`] || .5;
+  edge.text.setAttribute("transform", `translate(${a.x + dx * t} ${a.y + dy * t}) rotate(${angle}) translate(0 -5)`);
+}
+function render() {
+  layer.replaceChildren(); elements = new Map();
+  const pairs = new Map();
+  for (const t of DATA.triples) {
+    if (!shown[t[3]] || !visible.has(t[0]) || !visible.has(t[2])) continue;
+    const key = t[0] < t[2] ? t[0] + "|" + t[2] : t[2] + "|" + t[0];
+    if (!pairs.has(key)) pairs.set(key, {a:t[0], b:t[2], list:[]});
+    pairs.get(key).list.push(t);
+  }
+  drawn = [...pairs.values()].map(pair => {
+    const origins = [..."dor"].filter(k => pair.list.some(t => t[3] === k));
+    const style = origins.length ? origins[origins.length - 1] : "f";
+    const g = make("g", {class:"edge " + style}, layer);
+    const line = make("line", {}, g), hit = make("line", {class:"hit"}, g);
+    if (pair.list.some(t => t[0] === pair.a)) line.setAttribute("marker-end", `url(#arrow-${style})`);
+    if (pair.list.some(t => t[0] === pair.b)) line.setAttribute("marker-start", `url(#arrow-${style})`);
+    const text = make("text", pair.list.length > 1 ? {class:"many"} : {}, g);
+    text.textContent = pair.list.length > 1 ? `${pair.list.length} predicates` : pair.list[0][1];
+    for (const k of origins) { make("tspan", {class:k}, text).textContent = " · " + (k === "r" ? "Rule" : ORIGIN[k].name); }
+    g.addEventListener("pointerdown", event => event.stopPropagation());
+    g.addEventListener("click", () => select(null, pair));
+    return {...pair, g, line, hit, text};
+  });
+  for (const id of visible.keys()) {
+    const info = DATA.nodes[id];
+    const g = make("g", {class:"node" + (info[0] === "class" ? " cls" : ""), tabindex:0, role:"button", "aria-label":`${bare(id)}, ${KIND[info[0]][1]}`}, layer);
+    make("circle", {r:R, fill:KIND[info[0]][0]}, g);
+    const lines = labelLines(id);
+    lines.forEach((line, i) => { make("text", {y: 4 + (i - (lines.length - 1) / 2) * 15}, g).textContent = line; });
+    g.addEventListener("pointerdown", event => start(event, id));
+    g.addEventListener("keydown", event => { if (event.key === "Enter") select(id); if (event.key === "+") expand(id); });
+    elements.set(id, g);
+    move(id);
+  }
+  drawn.forEach(drawEdge);
+}
+function move(id) { const n = visible.get(id); elements.get(id).setAttribute("transform", `translate(${n.x} ${n.y})`); }
+function drawMenu() {
+  layer.querySelectorAll(".menu").forEach(m => m.remove());
+  if (!selected || !visible.has(selected)) return;
+  const n = visible.get(selected), hidden = hiddenAround(selected).length, opened = openedBy(selected).length;
+  const items = [["+", "Expand", -90, () => expand(selected), hidden], ["−", "Collapse", -35, () => collapse(selected), opened], ["×", "Sembunyikan", -145, () => hide(selected), 1]];
+  for (const [symbol, title, degrees, action, available] of items) {
+    if (!available) continue;
+    const angle = degrees * Math.PI / 180;
+    const g = make("g", {class:"menu", role:"button", "aria-label":title, transform:`translate(${n.x + Math.cos(angle) * (R + 17)} ${n.y + Math.sin(angle) * (R + 17)})`}, layer);
+    make("title", {}, g).textContent = title;
+    make("circle", {r:15}, g);
+    make("text", {y:6}, g).textContent = symbol;
+    if (symbol === "+") make("text", {y:-20, class:"count"}, g).textContent = hidden;
+    g.addEventListener("pointerdown", event => event.stopPropagation());
+    g.addEventListener("click", event => { event.stopPropagation(); action(); });
+  }
+}
+
+/* ---------------------------------------------------------------- details */
+function tripleRow(t, withAxiom) {
+  const row = html("div", null, panel, "row");
+  html("span", ORIGIN[t[3]].name, row, "tag " + t[3]);
+  row.append(`${bare(t[0])}  ${t[1]} →  ${bare(t[2])}`);
+  html("small", DATA.reasons[t[4]], row);
+  if (withAxiom) {
+    const key = t[1] === "type" || t[1] === "subClassOf" ? t[2] : t[1];
+    if (DATA.axioms[key]) html("pre", DATA.axioms[key], row);
+  }
+}
+function select(id, pair) {
+  selected = id;
+  const list = pair ? pair.list : id ? (touching.get(id) || []).filter(t => shown[t[3]]) : [];
+  const active = !!(id || pair);
+  const near = new Set(pair ? [pair.a, pair.b] : id ? [id, ...neighbours(id)] : []);
+  for (const [other, g] of elements) { g.classList.toggle("dim", active && !near.has(other)); g.classList.toggle("on", other === id); }
+  for (const e of drawn) e.g.classList.toggle("dim", active && !(pair ? e.a === pair.a && e.b === pair.b : e.a === id || e.b === id));
+  drawMenu();
+  panel.hidden = !active;
+  panel.replaceChildren();
+  if (!active) return;
+  const close = html("button", "×", panel, "close"); close.type = "button"; close.setAttribute("aria-label", "Tutup"); close.onclick = () => select(null);
+  if (pair) {
+    html("h2", `${bare(pair.a)} dan ${bare(pair.b)}`, panel);
+    html("h3", "Relasi, asalnya, dan aksioma di ontologi", panel);
+    list.forEach(t => tripleRow(t, true));
+    return;
+  }
+  const [kind, en, indonesian, values] = DATA.nodes[id];
+  html("h2", bare(id), panel);
+  html("div", [KIND[kind][1], en, indonesian].filter(Boolean).join(" · "), panel);
+  const actions = html("div", null, panel, "actions"), hidden = hiddenAround(id).length;
+  for (const [label, action, enabled] of [[`+ Expand (${hidden} tersembunyi)`, () => expand(id), hidden], ["− Collapse", () => collapse(id), openedBy(id).length], ["× Sembunyikan", () => hide(id), visible.has(id)]]) {
+    const button = html("button", label, actions); button.type = "button"; button.disabled = !enabled; button.onclick = action;
+  }
+  const types = list.filter(t => t[0] === id && (t[1] === "type" || t[1] === "subClassOf"));
+  if (types.length) { html("h3", kind === "class" ? "Sub-kelas dari" : "Tipe (rdf:type)", panel); types.forEach(t => tripleRow(t)); }
+  if (values.length) { html("h3", "Nilai", panel); values.forEach(([p, v]) => { const row = html("div", p, panel, "row"); html("small", v, row); }); }
+  if (DATA.axioms[id]) { html("h3", "Definisi di T-Box", panel); html("pre", DATA.axioms[id], panel); }
+  const rest = list.filter(t => !types.includes(t));
+  if (rest.length) { html("h3", `Relasi lain (${rest.length})`, panel); rest.slice(0, 40).forEach(t => tripleRow(t)); }
+  if (rest.length > 40) html("div", `${rest.length - 40} relasi lagi: gunakan expand.`, panel, "row");
+}
+
+/* ---------------------------------------------------------------- pan, zoom, drag */
+const applyView = () => svg.setAttribute("viewBox", `${view.x} ${view.y} ${view.w} ${view.h}`);
+function fit() {
+  const list = [...visible.values()];
+  if (!list.length) return;
+  const x0 = Math.min(...list.map(n => n.x)) - 75, x1 = Math.max(...list.map(n => n.x)) + 75;
+  const y0 = Math.min(...list.map(n => n.y)) - 80, y1 = Math.max(...list.map(n => n.y)) + 65;
+  const box = svg.getBoundingClientRect(), width = box.width || 1200;
+  /* keep the graph clear of the detail panel when one is open */
+  const usable = selected && width > 900 ? width - 405 : width, ratio = usable / (box.height || 650);
+  let w = Math.max(x1 - x0, 900), h = y1 - y0;
+  if (w / h < ratio) w = h * ratio; else h = w / ratio;
+  view = {x:(x0 + x1 - w) / 2, y:(y0 + y1 - h) / 2, w:w * width / usable, h};
+  applyView();
+}
+const point = event => new DOMPoint(event.clientX, event.clientY).matrixTransform(svg.getScreenCTM().inverse());
+let drag = null, last = {id:null, time:0};
+function start(event, id) {
+  event.stopPropagation(); event.preventDefault();
+  const p = point(event), n = visible.get(id);
+  drag = {id, dx:n.x - p.x, dy:n.y - p.y, x:event.clientX, y:event.clientY, moved:false};
+}
+svg.addEventListener("pointerdown", event => { drag = {id:null, x:event.clientX, y:event.clientY, moved:false}; });
+addEventListener("pointermove", event => {
+  if (!drag) return;
+  if (!drag.moved && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 4) return;
+  drag.moved = true;
+  if (drag.id) {
+    const p = point(event), n = visible.get(drag.id);
+    n.x = p.x + drag.dx; n.y = p.y + drag.dy; move(drag.id);
+    drawn.filter(e => e.a === drag.id || e.b === drag.id).forEach(drawEdge);
+    drawMenu();
+  } else {
+    const scale = svg.getScreenCTM().a;
+    view.x -= (event.clientX - drag.x) / scale; view.y -= (event.clientY - drag.y) / scale;
+    drag.x = event.clientX; drag.y = event.clientY; applyView();
+  }
+});
+addEventListener("pointerup", () => {
+  if (drag && !drag.moved) {
+    if (!drag.id) select(null);
+    else if (last.id === drag.id && Date.now() - last.time < 400) { expand(drag.id); last = {id:null, time:0}; }
+    else { last = {id:drag.id, time:Date.now()}; select(drag.id); }
+  }
+  drag = null;
+});
+svg.addEventListener("wheel", event => {
+  event.preventDefault();
+  const p = point(event), factor = event.deltaY < 0 ? .87 : 1.15;
+  const w = Math.max(300, Math.min(9000, view.w * factor)), f = w / view.w;
+  view = {x:p.x - (p.x - view.x) * f, y:p.y - (p.y - view.y) * f, w, h:view.h * f};
+  applyView();
+}, {passive:false});
+
+/* ---------------------------------------------------------------- shell */
+for (const [key, o] of Object.entries(ORIGIN)) {
+  const marker = make("marker", {id:"arrow-" + key, viewBox:"0 0 10 10", refX:9, refY:5, markerWidth:8, markerHeight:8, orient:"auto-start-reverse"}, $("#defs"));
+  make("path", {d:"M1 1L9 5L1 9", fill:"none", stroke:key === "f" ? "#8a93a6" : o.colour, "stroke-width":1.4}, marker);
+  const button = html("button", null, $("#keys"), "key");
+  button.type = "button"; button.setAttribute("aria-pressed", "true"); button.title = "Klik untuk menampilkan atau menyembunyikan";
+  const sample = make("svg", {viewBox:"0 0 34 10"}, button);
+  make("line", {x1:0, y1:5, x2:34, y2:5, stroke:o.colour, "stroke-width":2.5, "stroke-dasharray":o.dash}, sample);
+  html("b", o.name, button); html("small", o.hint, button);
+  button.onclick = () => { shown[key] = !shown[key]; button.setAttribute("aria-pressed", shown[key]); render(); select(selected && visible.has(selected) ? selected : null); };
+}
+$("#fit").onclick = fit; $("#reset").onclick = reset;
+addEventListener("resize", fit);
+reset();
+const hash = location.hash.slice(1);
+if (hash.startsWith("expand=")) hash.slice(7).split(",").forEach(id => { if (visible.has(id)) expand(id); });
+else if (visible.has(hash)) select(hash);
+
+/* open the page with #selftest to exercise every node and report failures */
+if (hash === "selftest") {
+  const failures = [], check = (ok, text) => { if (!ok) failures.push(text); };
+  const clean = () => !/\bundefined\b|\bNaN\b|\[object /.test(panel.textContent + layer.textContent) && ![...layer.querySelectorAll("line")].some(l => /NaN/.test(l.getAttribute("x1") + l.getAttribute("y1")));
+  const initial = visible.size, edges = drawn.length;
+  for (const id of Object.keys(DATA.nodes)) { visible = new Map([[id, {x:0, y:0, by:null}]]); render(); expand(id); check(clean(), "bad text or line at " + id); check(visible.size === 1 + Math.min(BATCH, neighbours(id).length), "expand count at " + id); collapse(id); check(visible.size === 1, "collapse at " + id); }
+  reset();
+  for (const id of [...visible.keys()]) { const before = visible.size; expand(id); expand(id); check(clean(), "bad expand " + id); collapse(id); check(visible.size === before, "collapse restores " + id); }
+  for (const e of drawn) { select(null, e); check(clean(), "bad edge panel " + e.a); }
+  hide("gkd:GERD"); check(!visible.has("gkd:GERD"), "hide");
+  for (const key of Object.keys(ORIGIN)) { $("#keys").children[[..."fdor"].indexOf(key)].click(); check(drawn.every(e => e.list.every(t => t[3] !== key)), "toggle " + key); $("#keys").children[[..."fdor"].indexOf(key)].click(); }
+  reset(); check(visible.size === initial && drawn.length === edges, "reset");
+  const out = document.createElement("pre"); out.id = "selftest";
+  out.textContent = `SELFTEST nodes=${Object.keys(DATA.nodes).length} initial=${initial} edges=${edges} failures=${failures.length}\n${failures.slice(0, 20).join("\n")}`;
+  document.body.prepend(out);
+}
+</script>
+</body>
+</html>

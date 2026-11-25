@@ -1,0 +1,16 @@
+# VISUAL GRAPH: why E004 is an emergency
+PREFIX gk:      <http://example.org/gastrokg/ontology#>
+PREFIX gkd:     <http://example.org/gastrokg/data#>
+PREFIX rdfs:    <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+CONSTRUCT {
+  gkd:E004 gk:hasObservation ?obs ; gk:finalTriage ?level .
+  ?obs gk:observedSymptom ?s .
+  ?decision gk:ofEncounter gkd:E004 ; gk:triageLevel ?l ; gk:triggeredBy ?why .
+  ?level gk:refersTo ?place .
+} WHERE {
+  gkd:E004 gk:hasObservation ?obs ; gk:finalTriage ?level . ?level gk:refersTo ?place .
+  ?obs gk:observedSymptom ?s .
+  ?decision a gk:TriageDecision ; gk:ofEncounter gkd:E004 ; gk:triageLevel ?l ; gk:triggeredBy ?why .
+}

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alur Kerja GastroKG</title>
+<style>
+  body{margin:0;background:#0b0f1a;color:#fff;font:15px/1.55 system-ui,"Segoe UI",sans-serif}
+  main{max-width:1440px;margin:0 auto;padding:24px 16px}
+  h1{font-size:23px;margin:0}
+  p{margin:4px 0}.muted{color:#aab4c8}
+  .scroll{overflow-x:auto;margin:12px 0}
+  svg{display:block;width:100%;min-width:900px}
+  .line{stroke:#6b7589;stroke-width:1.6;fill:none;marker-end:url(#arrow)}
+  .edge{fill:#c9d1e1;font-size:12px;text-anchor:middle}
+  .frame{fill:none;stroke:#6b7589;stroke-dasharray:6 5}
+  .box{cursor:pointer;outline:none}
+  .box rect{stroke:transparent;stroke-width:3}
+  .box:hover rect,.box:focus-visible rect{stroke:#8fa6d8}
+  .box.on rect{stroke:#fff}
+  .box text{fill:#fff;text-anchor:middle;pointer-events:none}
+  .box .t{font-size:17px;font-weight:600}
+  .box .s{font-size:12px;fill:#d5dcec}
+  .box .e{font:12px ui-monospace,Consolas,monospace;fill:#9fd0ff}
+  #detail{background:#141b2d;border-radius:12px;padding:14px 18px;min-height:130px}
+  #detail h2{font-size:17px;margin:0 0 6px}
+  pre{background:#0b0f1a;border-radius:8px;padding:10px 12px;overflow:auto;font:12.5px/1.6 ui-monospace,Consolas,monospace;color:#9fd0ff}
+</style>
+</head>
+<body>
+<main>
+  <h1>Alur Kerja GastroKG</h1>
+  <p class="muted">Contoh satu pasien (E007): nyeri ulu hati, mual, nyeri saat lapar, dan rutin minum ibuprofen. Klik kotak untuk melihat detailnya.</p>
+
+  <div class="scroll">
+  <svg viewBox="0 0 1400 500" role="group" aria-label="Diagram alur dari data sampai keputusan">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+        <path d="M0 0L10 5L0 10z" fill="#6b7589"/>
+      </marker>
+    </defs>
+
+    <rect class="frame" x="473" y="165" width="440" height="180" rx="14"/>
+    <text class="edge" x="693" y="368">satu reasoner OWL 2 RL, dijalankan sekali: 1.705 → 4.077 triple (semua kasus)</text>
+
+    <path class="line" d="M175 160 L243 232"/>
+    <path class="line" d="M175 340 L243 268"/>
+    <path class="line" d="M405 250 L482 250"/>
+    <path class="line" d="M652 250 L731 250"/>
+    <path class="line" d="M901 250 L979 250"/>
+    <path class="line" d="M1147 215 L1222 112"/>
+    <path class="line" d="M1147 250 L1222 250"/>
+    <path class="line" d="M1147 285 L1222 388"/>
+
+    <text class="edge" x="224" y="186">skema</text>
+    <text class="edge" x="224" y="324">fakta</text>
+    <text class="edge" x="443" y="240">lolos</text>
+    <text class="edge" x="692" y="240">+ logika</text>
+    <text class="edge" x="940" y="240">fakta baru</text>
+
+    <g class="box" data-id="tbox" transform="translate(10 105)"><rect width="165" height="110" rx="12" fill="#1b3252"/>
+      <text class="t" x="82" y="34">1. T-Box</text><text class="s" x="82" y="56">skema ontologi</text><text class="e" x="82" y="86">50 kelas</text></g>
+    <g class="box" data-id="abox" transform="translate(10 285)"><rect width="165" height="110" rx="12" fill="#1b3252"/>
+      <text class="t" x="82" y="34">1. A-Box</text><text class="s" x="82" y="56">pengetahuan + pasien</text><text class="e" x="82" y="86">PT007, ibuprofen</text></g>
+
+    <g class="box" data-id="shacl" transform="translate(243 195)"><rect width="162" height="110" rx="12" fill="#0a2a6e"/>
+      <text class="t" x="81" y="34">2. SHACL</text><text class="s" x="81" y="56">validasi data</text><text class="e" x="81" y="86">data salah ditolak</text></g>
+
+    <g class="box" data-id="rdfs" transform="translate(487 195)"><rect width="165" height="110" rx="12" fill="#0019a5"/>
+      <text class="t" x="82" y="34">3. RDFS</text><text class="s" x="82" y="56">pewarisan</text><text class="e" x="82" y="80">takesRegularly</text><text class="e" x="82" y="97">→ takesMedication</text></g>
+
+    <g class="box" data-id="owl" transform="translate(736 195)"><rect width="165" height="110" rx="12" fill="#2c167c"/>
+      <text class="t" x="82" y="34">4. OWL</text><text class="s" x="82" y="56">klasifikasi otomatis</text><text class="e" x="82" y="86">PT007 = NSAIDUser</text></g>
+
+    <g class="box" data-id="sparql" transform="translate(982 195)"><rect width="165" height="110" rx="12" fill="#751570"/>
+      <text class="t" x="82" y="34">5. SPARQL</text><text class="s" x="82" y="56">30 rule CONSTRUCT</text><text class="e" x="82" y="86">hitung CF, triase</text></g>
+
+    <g class="box" data-id="diagnosis" transform="translate(1225 55)"><rect width="165" height="110" rx="12" fill="#1b3252"/>
+      <text class="t" x="82" y="34">6. Diagnosis</text><text class="s" x="82" y="58">tukak lambung</text><text class="e" x="82" y="86">CF 0,911</text></g>
+    <g class="box" data-id="safety" transform="translate(1225 195)"><rect width="165" height="110" rx="12" fill="#1b3252"/>
+      <text class="t" x="82" y="34">6. Obat</text><text class="s" x="82" y="58">3 peringatan</text><text class="e" x="82" y="86">ibuprofen</text></g>
+    <g class="box" data-id="triage" transform="translate(1225 335)"><rect width="165" height="110" rx="12" fill="#1b3252"/>
+      <text class="t" x="82" y="34">6. Triase</text><text class="s" x="82" y="58">kunjungan rutin</text><text class="e" x="82" y="86">layanan primer</text></g>
+  </svg>
+  </div>
+
+  <section id="detail" aria-live="polite"></section>
+  <p class="muted">Prototipe edukasi. Nilai certainty factor (CF) ilustratif dan belum divalidasi klinis. Pasien sintetis.</p>
+</main>
+<script>
+const INFO = {
+  tbox: ["T-Box: skema", "Menentukan jenis hal dan hubungannya, termasuk definisi kelas yang nanti dipakai reasoner. File: ontology/gastrokg-tbox.ttl",
+    "gk:NSAIDUser = gk:Patient DAN gk:takesDrugClass bernilai gkd:NSAID"],
+  abox: ["A-Box: fakta", "Pengetahuan (6 penyakit, 22 gejala, bobot, rule, obat) dan data pasien. File: gastrokg-knowledge.ttl dan gastrokg-cases.ttl",
+    "gkd:PT007 gk:takesRegularly gkd:Ibuprofen .\nGejala E007: G01 nyeri ulu hati (1,0), G02 mual (0,6), G10 nyeri saat lapar/malam (0,8)"],
+  shacl: ["SHACL: validasi", "Memeriksa data sebelum dinalar. Data E007 lolos.",
+    "Ditolak jika: bobot pakar tidak di antara -1 dan 1, atau obat tidak punya golongan"],
+  rdfs: ["RDFS: pewarisan", "Meneruskan fakta lewat hierarki kelas dan properti.",
+    "takesRegularly  rdfs:subPropertyOf  takesMedication\n=> gkd:PT007 gk:takesMedication gkd:Ibuprofen"],
+  owl: ["OWL: logika ontologi", "Memakai hasil RDFS, lalu menyimpulkan golongan obat dan kelas pasien. Tidak ada yang ditulis manual.",
+    "takesMedication + drugClass  => PT007 takesDrugClass NSAID   (rantai properti)\ntakesDrugClass = NSAID       => PT007 a NSAIDUser\nNSAIDUser                    => PT007 a UlcerRiskPatient\nE007                         => a DyspepticEncounter"],
+  sparql: ["SPARQL CONSTRUCT: rule", "Mengerjakan yang tidak bisa dilakukan OWL: menghitung angka dan memutuskan dari data yang tidak ada. Menghasilkan 3.495 triple baru untuk 13 kasus.",
+    "cocokkan bukti -> gabungkan CF -> ranking -> cek obat -> triase -> saran\nRule R4 (G01, G02, G10): 3 dari 3 syarat terpenuhi\nRumus: CF baru = CF lama + CF gejala x (1 - CF lama)"],
+  diagnosis: ["Diagnosis", "Daftar kemungkinan penyakit, bisa ditelusuri langkah hitungnya.",
+    "1. Tukak lambung   CF 0,911   semua syarat rule terpenuhi\n2. Gastritis       CF 0,872   sebagian\n3. GERD            CF 0,872   sebagian"],
+  safety: ["Keamanan obat", "Obat pasien dicocokkan dengan dugaan penyakit.",
+    "Ibuprofen pada dugaan tukak lambung   tingkat tinggi\nIbuprofen pada dugaan gastritis       tingkat tinggi\nIbuprofen pada dugaan GERD            tingkat sedang\nAlternatif untuk didiskusikan dengan dokter: parasetamol"],
+  triage: ["Triase dan saran", "Menentukan seberapa mendesak pasien perlu diperiksa.",
+    "Kunjungan FKTP rutin (layanan primer)\nSaran: tes H. pylori non-invasif dan tinjau pemakaian obat nyeri"]
+};
+const detail = document.getElementById("detail");
+const boxes = [...document.querySelectorAll(".box")];
+function show(box) {
+  const [title, text, example] = INFO[box.dataset.id];
+  boxes.forEach(b => b.classList.toggle("on", b === box));
+  detail.replaceChildren();
+  for (const [tag, value] of [["h2", title], ["p", text], ["pre", example]]) {
+    const element = document.createElement(tag);
+    element.textContent = value;
+    detail.append(element);
+  }
+}
+boxes.forEach(box => {
+  box.setAttribute("tabindex", "0");
+  box.setAttribute("role", "button");
+  box.addEventListener("click", () => show(box));
+  box.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); show(box); } });
+});
+show(boxes.find(b => b.dataset.id === (location.hash.slice(1) || "tbox")) || boxes[0]);
+</script>
+</body>
+</html>

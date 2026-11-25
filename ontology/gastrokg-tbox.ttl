@@ -1,0 +1,387 @@
+# =====================================================================
+#  GastroKG -- T-Box (ontology)
+#  Knowledge-graph expert system for stomach disease screening
+#  Hasnan Husaini, Muhammad Zainurrahman, Nur Sekti Waskitha Jati
+#  Magister Kecerdasan Artifisial, Universitas Gadjah Mada, 2026
+#
+#  Educational screening prototype. Not a medical device.
+# =====================================================================
+@prefix gk:      <http://example.org/gastrokg/ontology#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+<http://example.org/gastrokg/ontology> a owl:Ontology ;
+    rdfs:label "GastroKG ontology"@en ;
+    rdfs:comment "T-Box for screening of upper gastrointestinal complaints: clinical facts, expert knowledge with certainty factors, drug safety, triage and the results derived by rules."@en ;
+    dcterms:creator "Hasnan Husaini", "Muhammad Zainurrahman", "Nur Sekti Waskitha Jati" ;
+    dcterms:created "2026-11-25"^^xsd:date ;
+    owl:versionInfo "1.0.0" .
+
+# =====================================================================
+#  1. CLASSES
+# =====================================================================
+
+# ---- 1.1 People and clinical facts ----------------------------------
+gk:Person   a owl:Class ; rdfs:label "Person"@en , "Orang"@id .
+gk:Patient  a owl:Class ; rdfs:subClassOf gk:Person ;
+    rdfs:label "Patient"@en , "Pasien"@id .
+gk:Encounter a owl:Class ;
+    rdfs:label "Screening encounter"@en , "Kunjungan skrining"@id ;
+    rdfs:comment "One consultation session of a patient."@en .
+gk:SymptomObservation a owl:Class ;
+    rdfs:label "Symptom observation"@en , "Pengamatan gejala"@id ;
+    rdfs:comment "A symptom reported present or denied in an encounter, with the certainty of the patient. An n-ary relation, because RDFS and OWL cannot attach a certainty to a triple and reason with it."@en .
+
+# ---- 1.2 Symptoms ----------------------------------------------------
+gk:Symptom a owl:Class ; rdfs:label "Symptom"@en , "Gejala"@id .
+gk:DyspepticSymptom a owl:Class ; rdfs:subClassOf gk:Symptom ;
+    rdfs:label "Dyspeptic symptom"@en , "Gejala dispepsia"@id .
+gk:RefluxSymptom a owl:Class ; rdfs:subClassOf gk:Symptom ;
+    rdfs:label "Reflux symptom"@en , "Gejala refluks"@id .
+gk:AlarmSymptom a owl:Class ; rdfs:subClassOf gk:Symptom ;
+    rdfs:label "Alarm symptom"@en , "Gejala bahaya"@id ;
+    rdfs:comment "A warning sign that needs prompt medical assessment, whatever the certainty factor of any disease."@en .
+gk:EmergencySymptom a owl:Class ; rdfs:subClassOf gk:AlarmSymptom ;
+    rdfs:label "Emergency symptom"@en , "Gejala gawat darurat"@id .
+gk:BleedingSymptom a owl:Class ; rdfs:subClassOf gk:EmergencySymptom ;
+    rdfs:label "Bleeding symptom"@en , "Gejala perdarahan"@id .
+
+# ---- 1.3 Diseases ----------------------------------------------------
+gk:Disease a owl:Class ; rdfs:label "Disease"@en , "Penyakit"@id .
+gk:UpperGIDisease a owl:Class ; rdfs:subClassOf gk:Disease ;
+    rdfs:label "Upper gastrointestinal disease"@en , "Penyakit saluran cerna atas"@id .
+gk:InflammatoryDisease a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Inflammatory disease"@en , "Penyakit radang"@id .
+gk:FunctionalDisorder a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Functional disorder"@en , "Gangguan fungsional"@id .
+gk:RefluxDisease a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Reflux disease"@en , "Penyakit refluks"@id .
+gk:UlcerDisease a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Ulcer disease"@en , "Penyakit tukak"@id .
+gk:MotilityDisorder a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Motility disorder"@en , "Gangguan motilitas"@id .
+gk:MalignantNeoplasm a owl:Class ; rdfs:subClassOf gk:UpperGIDisease ;
+    rdfs:label "Malignant neoplasm"@en , "Neoplasma ganas"@id .
+gk:AnatomicalSite a owl:Class ;
+    rdfs:label "Anatomical site"@en , "Lokasi anatomi"@id .
+gk:RiskFactor a owl:Class ; rdfs:label "Risk factor"@en , "Faktor risiko"@id .
+
+# ---- 1.4 Expert knowledge --------------------------------------------
+gk:KnowledgeStatement a owl:Class ;
+    rdfs:label "Knowledge statement"@en , "Pernyataan pengetahuan"@id ;
+    rdfs:comment "A piece of expert knowledge that carries its own source."@en .
+gk:EvidenceLink a owl:Class ; rdfs:subClassOf gk:KnowledgeStatement ;
+    rdfs:label "Evidence link"@en , "Hubungan bukti"@id ;
+    rdfs:comment "Disease and symptom with the expert certainty factor (CF = MB - MD)."@en .
+gk:DiagnosticRule a owl:Class ; rdfs:subClassOf gk:KnowledgeStatement ;
+    rdfs:label "Diagnostic IF-THEN rule"@en , "Aturan diagnosis"@id .
+gk:DrugCaution a owl:Class ; rdfs:subClassOf gk:KnowledgeStatement ;
+    rdfs:label "Drug-disease caution"@en , "Peringatan obat-penyakit"@id .
+gk:DrugInteraction a owl:Class ; rdfs:subClassOf gk:KnowledgeStatement ;
+    rdfs:label "Drug-drug interaction"@en , "Interaksi obat"@id .
+gk:TriagePolicy a owl:Class ; rdfs:subClassOf gk:KnowledgeStatement ;
+    rdfs:label "Triage policy"@en , "Kebijakan triase"@id ;
+    rdfs:comment "Thresholds used by the rules, stored as data so they can change without editing a query."@en .
+gk:WeightStatus a owl:Class ;
+    rdfs:label "Weight validation status"@en , "Status validasi bobot"@id .
+
+# ---- 1.5 Medicines, care and actions ---------------------------------
+gk:Medication a owl:Class ; rdfs:label "Medication"@en , "Obat"@id .
+gk:DrugClass  a owl:Class ; rdfs:label "Drug class"@en , "Golongan obat"@id .
+gk:Examination a owl:Class ; rdfs:label "Examination"@en , "Pemeriksaan"@id .
+gk:CareFacility a owl:Class ; rdfs:label "Care facility"@en , "Fasilitas layanan"@id .
+gk:TriageLevel a owl:Class ; rdfs:label "Triage level"@en , "Tingkat triase"@id .
+gk:MatchStatus a owl:Class ; rdfs:label "Match status"@en , "Status kecocokan"@id .
+gk:Polarity a owl:Class ; rdfs:label "Evidence polarity"@en , "Arah bukti"@id .
+
+# ---- 1.6 Results derived by SPARQL rules -----------------------------
+gk:InferredResult a owl:Class ; rdfs:subClassOf prov:Entity ;
+    rdfs:label "Inferred result"@en , "Hasil inferensi"@id .
+gk:Hypothesis a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Diagnostic hypothesis"@en , "Hipotesis diagnosis"@id .
+gk:EvidenceItem a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Evidence item (CF step)"@en , "Butir bukti (langkah CF)"@id .
+gk:RuleMatch a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Rule match"@en , "Pencocokan aturan"@id ;
+    rdfs:comment "How far one IF-THEN rule is satisfied in one encounter."@en .
+gk:RuleFiring a owl:Class ; rdfs:subClassOf gk:RuleMatch ;
+    rdfs:label "Rule firing"@en , "Aturan terpicu"@id ;
+    rdfs:comment "A rule match with every condition satisfied."@en .
+gk:TriageDecision a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Triage decision"@en , "Keputusan triase"@id .
+gk:SafetyAlert a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Medication safety alert"@en , "Peringatan keamanan obat"@id .
+gk:Recommendation a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Recommendation"@en , "Rekomendasi"@id .
+gk:QuestionSuggestion a owl:Class ; rdfs:subClassOf gk:InferredResult ;
+    rdfs:label "Suggested next question"@en , "Saran pertanyaan berikutnya"@id .
+
+# =====================================================================
+#  2. OWL CLASS DEFINITIONS (classification by the reasoner)
+# =====================================================================
+
+gk:AlarmEncounter a owl:Class ;
+    rdfs:label "Encounter with alarm symptom"@en , "Kunjungan dengan gejala bahaya"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Encounter
+        [ a owl:Restriction ; owl:onProperty gk:showsSymptom ; owl:someValuesFrom gk:AlarmSymptom ] ) ] .
+
+gk:EmergencyEncounter a owl:Class ;
+    rdfs:label "Encounter with emergency symptom"@en , "Kunjungan gawat darurat"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Encounter
+        [ a owl:Restriction ; owl:onProperty gk:showsSymptom ; owl:someValuesFrom gk:EmergencySymptom ] ) ] .
+
+gk:DyspepticEncounter a owl:Class ;
+    rdfs:label "Encounter with dyspeptic symptom"@en , "Kunjungan dengan gejala dispepsia"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Encounter
+        [ a owl:Restriction ; owl:onProperty gk:showsSymptom ; owl:someValuesFrom gk:DyspepticSymptom ] ) ] .
+
+gk:NSAIDUser a owl:Class ;
+    rdfs:label "NSAID user"@en , "Pengguna NSAID"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Patient
+        [ a owl:Restriction ; owl:onProperty gk:takesDrugClass ; owl:hasValue <http://example.org/gastrokg/data#NSAID> ] ) ] .
+
+gk:AnticoagulantUser a owl:Class ;
+    rdfs:label "Anticoagulant user"@en , "Pengguna antikoagulan"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Patient
+        [ a owl:Restriction ; owl:onProperty gk:takesDrugClass ; owl:hasValue <http://example.org/gastrokg/data#Anticoagulant> ] ) ] .
+
+gk:HPyloriHistoryPatient a owl:Class ;
+    rdfs:label "Patient with H. pylori history"@en , "Pasien dengan riwayat H. pylori"@id ;
+    owl:equivalentClass [ a owl:Class ; owl:intersectionOf ( gk:Patient
+        [ a owl:Restriction ; owl:onProperty gk:hasRiskFactor ; owl:hasValue <http://example.org/gastrokg/data#HPyloriInfection> ] ) ] .
+
+gk:UlcerRiskPatient a owl:Class ; rdfs:subClassOf gk:Patient ;
+    rdfs:label "Patient at raised ulcer risk"@en , "Pasien berisiko tukak"@id .
+
+# union on the left side of subClassOf stays inside the OWL 2 RL profile
+[ a owl:Class ; owl:unionOf ( gk:NSAIDUser gk:HPyloriHistoryPatient ) ]
+    rdfs:subClassOf gk:UlcerRiskPatient .
+
+# ---- Disjointness: lets a reasoner report contradictions -------------
+[ a owl:AllDisjointClasses ;
+  owl:members ( gk:Person gk:Encounter gk:SymptomObservation gk:Symptom gk:Disease
+                gk:Medication gk:DrugClass gk:TriageLevel gk:CareFacility gk:AnatomicalSite ) ] .
+
+# =====================================================================
+#  3. OBJECT PROPERTIES
+# =====================================================================
+
+# ---- 3.1 Clinical facts ----------------------------------------------
+gk:hadEncounter a owl:ObjectProperty ;
+    rdfs:label "had encounter"@en ;
+    rdfs:domain gk:Patient ; rdfs:range gk:Encounter .
+gk:encounterOf a owl:ObjectProperty ;
+    rdfs:label "encounter of"@en ;
+    owl:inverseOf gk:hadEncounter .
+gk:hasObservation a owl:ObjectProperty ;
+    rdfs:label "has observation"@en ;
+    rdfs:domain gk:Encounter ; rdfs:range gk:SymptomObservation .
+gk:observedSymptom a owl:ObjectProperty ;
+    rdfs:label "reports symptom"@en ;
+    rdfs:domain gk:SymptomObservation ; rdfs:range gk:Symptom .
+gk:deniedSymptom a owl:ObjectProperty ;
+    rdfs:label "denies symptom"@en ;
+    rdfs:domain gk:SymptomObservation ; rdfs:range gk:Symptom .
+gk:showsSymptom a owl:ObjectProperty ;
+    rdfs:label "shows symptom"@en ;
+    rdfs:domain gk:Encounter ; rdfs:range gk:Symptom ;
+    owl:propertyChainAxiom ( gk:hasObservation gk:observedSymptom ) .
+
+gk:takesMedication a owl:ObjectProperty ;
+    rdfs:label "takes medication"@en ;
+    rdfs:domain gk:Patient ; rdfs:range gk:Medication .
+gk:takesRegularly a owl:ObjectProperty ;
+    rdfs:label "takes regularly"@en ;
+    rdfs:subPropertyOf gk:takesMedication .
+gk:drugClass a owl:ObjectProperty ;
+    rdfs:label "belongs to drug class"@en ;
+    rdfs:domain gk:Medication ; rdfs:range gk:DrugClass .
+gk:takesDrugClass a owl:ObjectProperty ;
+    rdfs:label "takes drug class"@en ;
+    rdfs:domain gk:Patient ; rdfs:range gk:DrugClass ;
+    owl:propertyChainAxiom ( gk:takesMedication gk:drugClass ) .
+gk:hasRiskFactor a owl:ObjectProperty ;
+    rdfs:label "has risk factor"@en ;
+    rdfs:domain gk:Patient ; rdfs:range gk:RiskFactor .
+
+# ---- 3.2 Domain knowledge --------------------------------------------
+gk:ofDisease a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "evidence for disease"@en ;
+    rdfs:domain gk:EvidenceLink ; rdfs:range gk:Disease .
+gk:hasEvidenceLink a owl:ObjectProperty ;
+    rdfs:label "has evidence link"@en ;
+    owl:inverseOf gk:ofDisease .
+gk:aboutSymptom a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "about symptom"@en ;
+    rdfs:domain gk:EvidenceLink ; rdfs:range gk:Symptom .
+gk:manifestsAs a owl:ObjectProperty ;
+    rdfs:label "manifests as"@en ;
+    rdfs:comment "Direct disease-symptom edge derived from supporting evidence links."@en ;
+    rdfs:domain gk:Disease ; rdfs:range gk:Symptom .
+gk:concludes a owl:ObjectProperty ;
+    rdfs:label "concludes"@en ;
+    rdfs:domain gk:DiagnosticRule ; rdfs:range gk:Disease .
+gk:requiresSymptom a owl:ObjectProperty ;
+    rdfs:label "requires symptom"@en ;
+    rdfs:domain gk:DiagnosticRule ; rdfs:range gk:Symptom .
+gk:weightStatus a owl:ObjectProperty ;
+    rdfs:label "weight status"@en ;
+    rdfs:range gk:WeightStatus .
+gk:increasesRiskOf a owl:ObjectProperty ;
+    rdfs:label "increases risk of"@en ;
+    rdfs:domain gk:RiskFactor ; rdfs:range gk:Disease .
+gk:affects a owl:ObjectProperty ;
+    rdfs:label "affects"@en ;
+    rdfs:domain gk:Disease ; rdfs:range gk:AnatomicalSite ;
+    owl:propertyChainAxiom ( gk:affects gk:partOf ) .
+gk:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "part of"@en ;
+    rdfs:domain gk:AnatomicalSite ; rdfs:range gk:AnatomicalSite .
+gk:suggestsExamination a owl:ObjectProperty ;
+    rdfs:label "suggests examination"@en ;
+    rdfs:domain gk:Disease ; rdfs:range gk:Examination .
+
+gk:cautionDrugClass a owl:ObjectProperty ;
+    rdfs:label "caution for drug class"@en ;
+    rdfs:domain gk:DrugCaution ; rdfs:range gk:DrugClass .
+gk:cautionDisease a owl:ObjectProperty ;
+    rdfs:label "caution in disease"@en ;
+    rdfs:domain gk:DrugCaution ; rdfs:range gk:Disease .
+gk:interactionBetween a owl:ObjectProperty ;
+    rdfs:label "interaction between"@en ;
+    rdfs:domain gk:DrugInteraction ; rdfs:range gk:DrugClass .
+gk:saferAlternative a owl:ObjectProperty ;
+    rdfs:label "alternative to discuss"@en ;
+    rdfs:range gk:Medication .
+
+gk:moreUrgentThan a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "more urgent than"@en ;
+    rdfs:domain gk:TriageLevel ; rdfs:range gk:TriageLevel .
+gk:refersTo a owl:ObjectProperty ;
+    rdfs:label "refers to"@en ;
+    rdfs:domain gk:TriageLevel ; rdfs:range gk:CareFacility .
+
+# ---- 3.3 Inferred results --------------------------------------------
+gk:ofEncounter a owl:ObjectProperty ;
+    rdfs:label "of encounter"@en ;
+    rdfs:domain gk:InferredResult ; rdfs:range gk:Encounter .
+gk:forDisease a owl:ObjectProperty ;
+    rdfs:label "for disease"@en ; rdfs:range gk:Disease .
+gk:matchStatus a owl:ObjectProperty ;
+    rdfs:label "match status"@en ;
+    rdfs:domain gk:Hypothesis ; rdfs:range gk:MatchStatus .
+gk:primaryHypothesis a owl:ObjectProperty ;
+    rdfs:label "primary hypothesis"@en ;
+    rdfs:domain gk:Encounter ; rdfs:range gk:Hypothesis .
+gk:ofHypothesis a owl:ObjectProperty ;
+    rdfs:label "step of hypothesis"@en ;
+    rdfs:domain gk:EvidenceItem ; rdfs:range gk:Hypothesis .
+gk:basedOnObservation a owl:ObjectProperty ;
+    rdfs:label "based on observation"@en ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:domain gk:EvidenceItem ; rdfs:range gk:SymptomObservation .
+gk:basedOnLink a owl:ObjectProperty ;
+    rdfs:label "based on evidence link"@en ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:domain gk:EvidenceItem ; rdfs:range gk:EvidenceLink .
+gk:polarity a owl:ObjectProperty ;
+    rdfs:label "polarity"@en ; rdfs:range gk:Polarity .
+gk:previousStep a owl:ObjectProperty ;
+    rdfs:label "previous CF step"@en ;
+    rdfs:domain gk:EvidenceItem ; rdfs:range gk:EvidenceItem .
+gk:evaluatesRule a owl:ObjectProperty ;
+    rdfs:label "evaluates rule"@en ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:domain gk:RuleMatch ; rdfs:range gk:DiagnosticRule .
+gk:firedRule a owl:ObjectProperty ;
+    rdfs:label "fired rule"@en ;
+    rdfs:subPropertyOf gk:evaluatesRule ;
+    rdfs:domain gk:RuleFiring ; rdfs:range gk:DiagnosticRule .
+gk:suggestedAlternative a owl:ObjectProperty ;
+    rdfs:label "suggested alternative"@en ;
+    rdfs:domain gk:SafetyAlert ; rdfs:range gk:Medication .
+gk:triageLevel a owl:ObjectProperty ;
+    rdfs:label "triage level"@en ;
+    rdfs:domain gk:TriageDecision ; rdfs:range gk:TriageLevel .
+gk:finalTriage a owl:ObjectProperty ;
+    rdfs:label "final triage"@en ;
+    rdfs:domain gk:Encounter ; rdfs:range gk:TriageLevel .
+gk:triggeredBy a owl:ObjectProperty ;
+    rdfs:label "triggered by"@en ;
+    rdfs:subPropertyOf prov:wasDerivedFrom .
+gk:concernsMedication a owl:ObjectProperty ;
+    rdfs:label "concerns medication"@en ;
+    rdfs:domain gk:SafetyAlert ; rdfs:range gk:Medication .
+gk:recommendsExamination a owl:ObjectProperty ;
+    rdfs:label "recommends examination"@en ;
+    rdfs:domain gk:Recommendation ; rdfs:range gk:Examination .
+gk:askSymptom a owl:ObjectProperty ;
+    rdfs:label "ask about"@en ;
+    rdfs:domain gk:QuestionSuggestion ; rdfs:range gk:Symptom .
+gk:distinguishes a owl:ObjectProperty ;
+    rdfs:label "distinguishes between"@en ;
+    rdfs:domain gk:QuestionSuggestion ; rdfs:range gk:Hypothesis .
+gk:missingSymptom a owl:ObjectProperty ;
+    rdfs:label "not yet reported for full rule"@en ;
+    rdfs:domain gk:Hypothesis ; rdfs:range gk:Symptom .
+gk:contextRiskFactor a owl:ObjectProperty ;
+    rdfs:label "patient risk factor in context"@en ;
+    rdfs:domain gk:Hypothesis ; rdfs:range gk:RiskFactor .
+
+# =====================================================================
+#  4. DATATYPE PROPERTIES
+# =====================================================================
+gk:code a owl:DatatypeProperty ; rdfs:label "code"@en ; rdfs:range xsd:string .
+gk:icd10Code a owl:DatatypeProperty ;
+    rdfs:label "ICD-10 code (WHO 2019)"@en ; rdfs:domain gk:Disease ; rdfs:range xsd:string .
+gk:initialAdvice a owl:DatatypeProperty ;
+    rdfs:label "initial advice"@en ; rdfs:domain gk:Disease .
+gk:matchedCount a owl:DatatypeProperty ;
+    rdfs:label "conditions satisfied"@en ; rdfs:range xsd:integer .
+gk:requiredCount a owl:DatatypeProperty ;
+    rdfs:label "conditions required"@en ; rdfs:range xsd:integer .
+gk:age a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "age in years"@en ; rdfs:domain gk:Patient ; rdfs:range xsd:integer .
+gk:userCF a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "patient certainty (0-1]"@en ;
+    rdfs:domain gk:SymptomObservation ; rdfs:range xsd:decimal .
+gk:expertCF a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "expert certainty factor when present (-1,1)"@en ;
+    rdfs:domain gk:EvidenceLink ; rdfs:range xsd:decimal .
+gk:absenceCF a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "expert certainty factor when denied (-1,0)"@en ;
+    rdfs:domain gk:EvidenceLink ; rdfs:range xsd:decimal .
+gk:severity a owl:DatatypeProperty ; rdfs:label "severity"@en ; rdfs:range xsd:string .
+gk:priority a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "priority"@en ; rdfs:range xsd:integer .
+gk:referralAge a owl:DatatypeProperty ;
+    rdfs:label "age for endoscopy referral"@en ;
+    rdfs:domain gk:TriagePolicy ; rdfs:range xsd:integer .
+gk:partialMinSymptoms a owl:DatatypeProperty ;
+    rdfs:label "minimum symptoms for a partial match"@en ;
+    rdfs:domain gk:TriagePolicy ; rdfs:range xsd:integer .
+gk:partialMinCoverage a owl:DatatypeProperty ;
+    rdfs:label "minimum rule coverage for a partial match"@en ;
+    rdfs:domain gk:TriagePolicy ; rdfs:range xsd:decimal .
+gk:alertMinCF a owl:DatatypeProperty ;
+    rdfs:label "minimum CF that activates a drug caution"@en ;
+    rdfs:domain gk:TriagePolicy ; rdfs:range xsd:decimal .
+
+gk:itemCF a owl:DatatypeProperty ; rdfs:label "CF of this evidence"@en ; rdfs:range xsd:decimal .
+gk:sequence a owl:DatatypeProperty ; rdfs:label "step number"@en ; rdfs:range xsd:integer .
+gk:cumulativeBefore a owl:DatatypeProperty ; rdfs:label "CF before step"@en ; rdfs:range xsd:decimal .
+gk:cumulativeAfter a owl:DatatypeProperty ; rdfs:label "CF after step"@en ; rdfs:range xsd:decimal .
+gk:supportCF a owl:DatatypeProperty ; rdfs:label "combined supporting CF"@en ; rdfs:range xsd:decimal .
+gk:oppositionCF a owl:DatatypeProperty ; rdfs:label "combined opposing CF"@en ; rdfs:range xsd:decimal .
+gk:certaintyFactor a owl:DatatypeProperty ; rdfs:label "certainty factor"@en ; rdfs:range xsd:decimal .
+gk:ruleCoverage a owl:DatatypeProperty ; rdfs:label "rule coverage (0-1)"@en ; rdfs:range xsd:decimal .
+gk:rank a owl:DatatypeProperty ; rdfs:label "rank"@en ; rdfs:range xsd:integer .
+gk:reason a owl:DatatypeProperty ; rdfs:label "reason"@en .
+gk:adviceText a owl:DatatypeProperty ; rdfs:label "advice"@en .
+gk:discriminationScore a owl:DatatypeProperty ;
+    rdfs:label "discrimination score"@en ; rdfs:range xsd:decimal .
