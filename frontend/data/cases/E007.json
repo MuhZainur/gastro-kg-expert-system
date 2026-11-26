@@ -48,8 +48,8 @@
           "level": "PrimaryCare",
           "reason": "A high-severity medicine alert needs a medication review.",
           "triggeredBy": [
-            "alert: Ibuprofen with suspected Gastritis",
-            "alert: Ibuprofen with suspected PepticUlcer"
+            "alert: Ibuprofen with suspected Gastritis (acute)",
+            "alert: Ibuprofen with suspected Peptic (stomach) ulcer"
           ]
         }
       ]

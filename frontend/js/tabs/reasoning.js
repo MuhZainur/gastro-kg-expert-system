@@ -52,7 +52,7 @@ export function ReasoningTab({ owlFacts, meta }) {
         ${owlFacts && owlFacts.length > 0
           ? html`
               <div class="table-scroll">
-                <table>
+                <table class="stack-table">
                   <thead>
                     <tr>
                       <th>Subject</th>
@@ -64,10 +64,10 @@ export function ReasoningTab({ owlFacts, meta }) {
                   <tbody>
                     ${owlFacts.map((fact, idx) => html`
                       <tr key=${idx}>
-                        <td>${fact.subject.label}</td>
-                        <td class="nowrap"><code>${fact.relation}</code></td>
-                        <td><strong>${fact.value.label}</strong></td>
-                        <td class="small">${fact.reason}</td>
+                        <td data-label="Subject">${fact.subject.label}</td>
+                        <td data-label="Relation" class="nowrap"><code>${fact.relation}</code></td>
+                        <td data-label="Inferred value"><strong>${fact.value.label}</strong></td>
+                        <td data-label="Reason" class="small">${fact.reason}</td>
                       </tr>
                     `)}
                   </tbody>

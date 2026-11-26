@@ -42,6 +42,19 @@ def _clean_text(text: str, encounter_id: str, patient_id: str) -> str:
     return cleaned.strip()
 
 
+def _trigger_text(graph: Graph, node: object, encounter_id: str, patient_id: str) -> str:
+    if not isinstance(node, URIRef):
+        return str(node)
+    if (node, RDF.type, GK.SafetyAlert) not in graph:
+        return _clean_text(label_of(graph, node, "en"), encounter_id, patient_id)
+    # The rule-built alert label carries the disease's internal name, so compose it from labels.
+    medicines = " with ".join(sorted(label_of(graph, m, "en") for m in graph.objects(node, GK.concernsMedication)))
+    disease = graph.value(node, GK.forDisease)
+    if isinstance(disease, URIRef):
+        return f"alert: {medicines} with suspected {label_of(graph, disease, 'en')}"
+    return f"alert: {medicines}"
+
+
 def _val_num(graph: Graph, subject: URIRef, predicate: URIRef) -> float | None:
     val = graph.value(subject, predicate)
     if val is None:
@@ -197,10 +210,7 @@ def _collect_response(
             continue
         prio_lit = graph.value(level, GK.priority)
         priority = int(prio_lit.toPython()) if isinstance(prio_lit, Literal) else 0
-        triggered = sorted(
-            _clean_text(label_of(graph, x, "en"), eid, pid) if isinstance(x, URIRef) else str(x)
-            for x in graph.objects(d, GK.triggeredBy)
-        )
+        triggered = sorted(_trigger_text(graph, x, eid, pid) for x in graph.objects(d, GK.triggeredBy))
         decisions.append({
             "priority": priority,
             "level": local_name(level),

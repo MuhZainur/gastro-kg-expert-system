@@ -17,6 +17,18 @@ const STATUS_LABELS = {
   WeakMatch: "Weak evidence",
 };
 
+const TRIAGE_NAMES = {
+  Emergency: "Emergency",
+  Urgent: "Urgent",
+  Referral: "Referral",
+  PrimaryCare: "Primary care",
+  SelfMonitor: "Self-monitoring",
+};
+
+export function triageName(level) {
+  return TRIAGE_NAMES[level] || level;
+}
+
 export function formatCf(value) {
   const num = Number(value);
   if (!Number.isFinite(num)) return "0.000";

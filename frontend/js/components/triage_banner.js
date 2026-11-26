@@ -1,5 +1,5 @@
 import { html } from "../../vendor/htm-preact-standalone.module.js";
-import { triageClass } from "../format.js";
+import { triageClass, triageName } from "../format.js";
 
 export function TriageBanner({ triage, meta }) {
   const modified = meta && ((meta.disabledRules && meta.disabledRules.length > 0) || meta.customKnowledge);
@@ -47,7 +47,7 @@ export function TriageBanner({ triage, meta }) {
                     <ul class="small">
                       ${triage.reasons.map((r, idx) => html`
                         <li key=${idx}>
-                          <strong>${r.level}:</strong> ${r.reason}
+                          <strong>${triageName(r.level)}:</strong> ${r.reason}
                           ${r.triggeredBy && r.triggeredBy.length > 0
                             ? html` (Triggered by: ${r.triggeredBy.join(", ")})`
                             : null}

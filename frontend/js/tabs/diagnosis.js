@@ -87,7 +87,7 @@ export function DiagnosisTab({ hypotheses, ruleMatches }) {
                     ${supportSteps.length > 0
                       ? html`
                           <div class="table-scroll">
-                            <table>
+                            <table class="stack-table">
                               <thead>
                                 <tr>
                                   <th>Step</th>
@@ -100,18 +100,20 @@ export function DiagnosisTab({ hypotheses, ruleMatches }) {
                               <tbody>
                                 ${supportSteps.map((s) => html`
                                   <tr key=${s.seq}>
-                                    <td>${s.seq}</td>
-                                    <td>
-                                      <strong>${s.symptom.code}</strong> · ${s.symptom.label}
-                                      <div class="small muted">${s.symptom.labelId}</div>
+                                    <td data-label="Step">${s.seq}</td>
+                                    <td data-label="Symptom">
+                                      <div>
+                                        <strong>${s.symptom.code}</strong> · ${s.symptom.label}
+                                        <div class="small muted">${s.symptom.labelId}</div>
+                                      </div>
                                     </td>
-                                    <td>
-                                      ${s.patientCertainty.toFixed(1)} × ${formatCf(s.expertWeight)} = <strong>${formatCf(s.itemCf)}</strong>
+                                    <td data-label="Patient × expert">
+                                      <div>${s.patientCertainty.toFixed(1)} × ${formatCf(s.expertWeight)} = <strong>${formatCf(s.itemCf)}</strong></div>
                                     </td>
-                                    <td>
-                                      ${formatCf(s.before)} → <strong>${formatCf(s.after)}</strong>
+                                    <td data-label="Before → After">
+                                      <div>${formatCf(s.before)} → <strong>${formatCf(s.after)}</strong></div>
                                     </td>
-                                    <td><${SourceList} sources=${s.sources} /></td>
+                                    <td data-label="Source"><${SourceList} sources=${s.sources} /></td>
                                   </tr>
                                 `)}
                               </tbody>
@@ -126,7 +128,7 @@ export function DiagnosisTab({ hypotheses, ruleMatches }) {
                             <h4>Opposing evidence</h4>
                             <p class="small">Combined opposition CF: <strong>${formatCf(h.opposition)}</strong> (combined support CF: ${formatCf(h.support)})</p>
                             <div class="table-scroll">
-                              <table>
+                              <table class="stack-table">
                                 <thead>
                                   <tr>
                                     <th>Symptom</th>
@@ -138,14 +140,14 @@ export function DiagnosisTab({ hypotheses, ruleMatches }) {
                                 <tbody>
                                   ${opposeSteps.map((s) => html`
                                     <tr key=${`opp-${s.seq}`}>
-                                      <td>
-                                        ${s.denied ? "Denied: " : ""}${s.symptom.code} · ${s.symptom.label}
+                                      <td data-label="Symptom">
+                                        <div>${s.denied ? "Denied: " : ""}${s.symptom.code} · ${s.symptom.label}</div>
                                       </td>
-                                      <td>
-                                        ${s.patientCertainty.toFixed(1)} × ${formatCf(s.expertWeight)} = ${formatCf(s.itemCf)}
+                                      <td data-label="Calculation">
+                                        <div>${s.patientCertainty.toFixed(1)} × ${formatCf(s.expertWeight)} = ${formatCf(s.itemCf)}</div>
                                       </td>
-                                      <td>${formatCf(s.before)} → ${formatCf(s.after)}</td>
-                                      <td><${SourceList} sources=${s.sources} /></td>
+                                      <td data-label="Before → After"><div>${formatCf(s.before)} → ${formatCf(s.after)}</div></td>
+                                      <td data-label="Source"><${SourceList} sources=${s.sources} /></td>
                                     </tr>
                                   `)}
                                 </tbody>
@@ -181,8 +183,7 @@ export function DiagnosisTab({ hypotheses, ruleMatches }) {
                               ${diseaseRules.map((m) => html`
                                 <li key=${m.rule}>
                                   <code>${m.rule}</code>: ${m.matched}/${m.required} conditions
-                                  ${m.fired ? " (fired)" : " (not fired)"} —
-                                  ${m.conditions.map((c) => `${c.code} ${c.met ? "✓" : "○"}`).join(", ")}
+                                  ${`${m.fired ? " (fired)" : " (not fired)"} — ${m.conditions.map((c) => `${c.code} ${c.met ? "✓" : "○"}`).join(", ")}`}
                                 </li>
                               `)}
                             </ul>

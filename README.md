@@ -35,12 +35,12 @@ Hasnan Husaini, Muhammad Zainurrahman, Nur Sekti Waskitha Jati.
 
 ## Run locally (Python 3.12)
 
-Using `uv`:
+Using `uv` (installs the pinned versions listed in `pyproject.toml`):
 
 ```
 uv venv .venv312 --python 3.12
 .venv312\Scripts\activate
-uv pip install -e . --group dev
+uv pip install -r pyproject.toml --group dev
 ```
 
 Or with standard `venv` + `pip`:
@@ -67,6 +67,15 @@ pytest tests/test_engine.py backend/tests
 python scripts/run_cases.py
 ```
 
+The API tests reason over every case several times and take several minutes.
+
+Optional browser tests need Playwright (`pip install playwright`, or `uv pip install playwright`) and
+Microsoft Edge. They start both local servers themselves, so stop any running ones first:
+
+```
+pytest tests/e2e
+```
+
 ## Changing the knowledge
 
 The two A-Box files, the rules, the queries, and the frontend precomputed JSON files are generated.
@@ -80,7 +89,7 @@ python scripts/build_graphdb.py
 python scripts/make_explorer.py
 python scripts/make_graph.py
 python scripts/build_frontend_data.py
-pytest
+pytest tests/test_engine.py backend/tests
 ```
 
 ## Security & limitations

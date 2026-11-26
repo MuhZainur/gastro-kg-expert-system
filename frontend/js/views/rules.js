@@ -2,7 +2,7 @@ import { html, useEffect, useState } from "../../vendor/htm-preact-standalone.mo
 import { getPresets, getRules, runConsultation } from "../api.js";
 import { ErrorPanel } from "../components/error_panel.js";
 import { LoadingPanel } from "../components/loading_panel.js";
-import { formatCf } from "../format.js";
+import { formatCf, triageName } from "../format.js";
 import { appState, buildConsultationPayload } from "../store.js";
 
 export function RulesView({ onNavigate }) {
@@ -122,7 +122,7 @@ export function RulesView({ onNavigate }) {
             <div class="notice" role="status">
               <strong>Comparison after re-run:</strong>
               <div>
-                Triage: <code>${prev.triage ? prev.triage.level : "none"}</code> → <code>${curr.triage ? curr.triage.level : "none"}</code>
+                Triage: <strong>${prev.triage ? triageName(prev.triage.level) : "none"}</strong> → <strong>${curr.triage ? triageName(curr.triage.level) : "none"}</strong>
                 · Top hypothesis: ${prev.hypotheses[0]?.disease.label || "none"} (${prev.hypotheses[0] ? formatCf(prev.hypotheses[0].cf) : "-"})
                 → ${curr.hypotheses[0]?.disease.label || "none"} (${curr.hypotheses[0] ? formatCf(curr.hypotheses[0].cf) : "-"})
               </div>

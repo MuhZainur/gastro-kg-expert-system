@@ -58,9 +58,14 @@
   gap: var(--space-2);
 }
 
+.graph-toolbar .graph-zoom {
+  min-width: var(--touch);
+  font-size: 18px;
+}
+
 .graph-stage {
   position: relative;
-  height: 560px;
+  height: min(640px, 80vh);
   min-height: 420px;
 }
 
@@ -91,6 +96,20 @@
   stroke: var(--graph-bg);
   stroke-width: 4px;
 }
+
+.graph-svg .edge text.many {
+  font-weight: 700;
+}
+
+.graph-svg .edge text tspan.d,
+.graph-svg .edge text tspan.o,
+.graph-svg .edge text tspan.r {
+  font-weight: 700;
+}
+
+.graph-svg .edge text tspan.d { fill: var(--origin-rdfs); }
+.graph-svg .edge text tspan.o { fill: var(--origin-owl); }
+.graph-svg .edge text tspan.r { fill: var(--origin-rule); }
 
 .graph-svg .edge.f line:not(.hit) { stroke: var(--origin-file); }
 .graph-svg .edge.d line:not(.hit) { stroke: var(--origin-rdfs); stroke-dasharray: 7 4; }
@@ -163,6 +182,27 @@
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-4);
   font-size: var(--fs-14);
+}
+
+.graph-panel h2 {
+  margin: 0 0 var(--space-1);
+  font-size: var(--fs-16, 16px);
+  overflow-wrap: anywhere;
+}
+
+.graph-panel .muted {
+  color: var(--origin-file);
+}
+
+@media (max-width: 640px) {
+  .graph-panel {
+    left: var(--space-2);
+    right: var(--space-2);
+    top: auto;
+    bottom: var(--space-2);
+    width: auto;
+    max-height: 52%;
+  }
 }
 
 .graph-panel h3 {

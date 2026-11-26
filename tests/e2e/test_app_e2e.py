@@ -10,7 +10,9 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[2]
+pytest.importorskip("playwright", reason="browser tests are optional and need Playwright")
+
+ROOT =Path(__file__).resolve().parents[2]
 QA_ARTIFACTS = Path(os.environ.get("GASTROKG_QA_ARTIFACTS", str(ROOT / ".pytest_cache" / "qa-artifacts")))
 FRONTEND_URL = "http://127.0.0.1:5500"
 API_URL = "http://127.0.0.1:8000"
@@ -183,7 +185,7 @@ def test_uc5_uc6_rules_and_custom_knowledge(guard_page):
     page.get_by_label("Enabled").uncheck()
     page.get_by_role("button", name="Run again").click()
     page.wait_for_selector("text=Comparison after re-run", timeout=45000)
-    assert "Referral → PrimaryCare" in page.inner_text("main")
+    assert "Referral → Primary care" in page.inner_text("main")
 
     # Re-enable rule and test Diclofenac preset on E001
     page.get_by_label("Enabled").check()
