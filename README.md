@@ -10,6 +10,11 @@ Hasnan Husaini, Muhammad Zainurrahman, Nur Sekti Waskitha Jati.
 > **Educational prototype, not a medical device.** The certainty weights are illustrative and have
 > not been clinically validated. All patient cases are synthetic.
 
+## Live deployment
+
+- **Web App (Frontend)**: https://gastro-kg-expert-system-frontend.vercel.app/
+- **API Base URL (Backend)**: https://gastro-kg-expert-system.vercel.app/ (health check: `/api/health`)
+
 ## Contents
 
 | Path | Content |
